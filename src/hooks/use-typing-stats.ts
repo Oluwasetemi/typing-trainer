@@ -13,7 +13,23 @@ export type TypingStats = {
 
 export function useTypingStats(): TypingStats {
   const { state } = useTyping();
-  const [, forceUpdate] = useState({});
+  const [currentTime, setCurrentTime] = useState(Date.now());
+
+  // Update current time every 100ms for smooth elapsed time updates
+  useEffect(
+    function updateCurrentTimeEffect() {
+      if (!state.startTime || state.finished) {
+        return;
+      }
+
+      const interval = setInterval(() => {
+        setCurrentTime(Date.now());
+      }, 100);
+
+      return () => clearInterval(interval);
+    },
+    [state.startTime, state.finished],
+  );
 
   // Calculate elapsed time during render
   const elapsedTime = useMemo(() => {
@@ -26,25 +42,9 @@ export function useTypingStats(): TypingStats {
       return state.endTime - state.startTime;
     }
 
-    // For active tests, calculate current elapsed time
-    return Date.now() - state.startTime;
-  }, [state.startTime, state.endTime, state.finished]);
-
-  // Force re-render every 100ms for smooth updates when typing is active(watching startTime and finished for changes)
-  useEffect(
-    function forceRenderEffect() {
-      if (!state.startTime || state.finished) {
-        return;
-      }
-
-      const interval = setInterval(() => {
-        forceUpdate({});
-      }, 100);
-
-      return () => clearInterval(interval);
-    },
-    [state.startTime, state.finished],
-  );
+    // For active tests, calculate current elapsed time using currentTime state
+    return currentTime - state.startTime;
+  }, [state.startTime, state.endTime, state.finished, currentTime]);
 
   return {
     wpm: calcWPM(state.currentIndex, elapsedTime),

@@ -1,9 +1,9 @@
+/* eslint-disable no-console */
+/* eslint-disable react-hooks-extra/no-direct-set-state-in-use-effect */
 import PartySocket from 'partysocket';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import type { TypingState } from '../context/typing-context';
-
-/* eslint-disable react-hooks-extra/no-direct-set-state-in-use-effect */
 
 export type RealtimeTypingState = {
   spectatorCount: number;

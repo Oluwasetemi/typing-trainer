@@ -4,12 +4,13 @@ import { useState } from 'react';
 import RealtimeTypingTrainer from '../components/realtime-typing-trainer/realtime-typing-trainer';
 import SessionManager from '../components/session-manager/session-manager';
 import SpectatorView from '../components/spectator-view/spectator-view';
+import TypingTrainer from '../components/typing-trainer';
 
 export const Route = createFileRoute('/')({
   component: App,
 });
 
-type AppMode = 'session-manager' | 'typing' | 'spectator';
+type AppMode = 'session-manager' | 'typing' | 'spectator' | 'solo';
 
 function App() {
   const [userId] = useState(
@@ -23,9 +24,11 @@ function App() {
   const sessionId = urlParams.get('session');
   const role = (urlParams.get('role') as 'typist' | 'spectator') || 'spectator';
   const mode: AppMode = sessionId
-    ? role === 'typist'
-      ? 'typing'
-      : 'spectator'
+    ? sessionId === 'solo'
+      ? 'solo'
+      : role === 'typist'
+        ? 'typing'
+        : 'spectator'
     : 'session-manager';
 
   const handleStartSession = (
@@ -33,15 +36,13 @@ function App() {
     newRole: 'typist' | 'spectator',
   ) => {
     // Update URL and force re-render
-    if (newSessionId !== 'solo') {
-      const newUrl = new URL(window.location.href);
-      newUrl.searchParams.set('session', newSessionId);
-      newUrl.searchParams.set('role', newRole);
-      window.history.pushState({}, '', newUrl.toString());
+    const newUrl = new URL(window.location.href);
+    newUrl.searchParams.set('session', newSessionId);
+    newUrl.searchParams.set('role', newRole);
+    window.history.pushState({}, '', newUrl.toString());
 
-      // Force re-render to pick up new URL parameters
-      forceUpdate({});
-    }
+    // Force re-render to pick up new URL parameters
+    forceUpdate({});
   };
 
   // const handleBackToSessions = () => {
@@ -66,6 +67,10 @@ function App() {
 
       {mode === 'spectator' && sessionId && (
         <SpectatorView sessionId={sessionId} userId={userId} />
+      )}
+
+      {mode === 'solo' && (
+        <TypingTrainer />
       )}
     </div>
   );
