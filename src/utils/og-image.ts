@@ -5,7 +5,7 @@ export function generateOGImageUrl(type: 'default' | 'session' | 'spectator' | '
   // Get the base URL - use localhost in development, production URL in production
   const baseUrl = import.meta.env.DEV
     ? (import.meta.env.VITE_API_URL || 'http://localhost:3001') // Allow override via env var
-    : 'https://typing-trainer.vercel.app';
+    : 'https://realtime-typing-trainer.netlify.app';
 
   const params = new URLSearchParams({
     type,
@@ -14,7 +14,7 @@ export function generateOGImageUrl(type: 'default' | 'session' | 'spectator' | '
     ...(sessionId && { sessionId }),
   });
 
-  return `${baseUrl}/api/og?${params.toString()}`;
+  return `${baseUrl}/.netlify/functions/og?${params.toString()}`;
 }
 
 /**

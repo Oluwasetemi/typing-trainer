@@ -1,17 +1,14 @@
 import { ImageResponse } from '@vercel/og';
-// Nitro provides these types globally when using defineEventHandler
 
-/** @type {import('nitropack').EventHandler} */
-
-export default defineEventHandler(async (event) => {
+export async function handler(event: any) {
   try {
-    const query = getQuery(event);
+    const query = new URLSearchParams(event.queryStringParameters || {});
 
     // Get parameters from URL
-    const title = (query.title as string) || 'Real-time Typing Trainer';
-    const description = (query.description as string) || 'Practice typing with real-time collaboration';
-    const type = (query.type as string) || 'default';
-    const sessionId = (query.sessionId as string) || '';
+    const title = query.get('title') || 'Real-time Typing Trainer';
+    const description = query.get('description') || 'Practice typing with real-time collaboration';
+    const type = query.get('type') || 'default';
+    const sessionId = query.get('sessionId') || '';
 
     // Define colors and styles based on type
     const getTypeStyles = (type: string) => {
@@ -209,19 +206,28 @@ export default defineEventHandler(async (event) => {
     };
 
     // Generate OG image using @vercel/og
-    return new ImageResponse(element, {
+    const response = new ImageResponse(element, {
       width: 1200,
       height: 630,
       headers: {
         'Cache-Control': 'public, max-age=3600, s-maxage=86400',
       },
     });
+
+    return {
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'image/png',
+        'Cache-Control': 'public, max-age=3600, s-maxage=86400',
+      },
+      body: response.body,
+    };
   }
   catch (e: any) {
     console.log(`Error: ${e.message}`);
-    throw createError({
+    return {
       statusCode: 500,
-      statusMessage: 'Failed to generate the image',
-    });
+      body: JSON.stringify({ error: 'Failed to generate the image' }),
+    };
   }
-});
+}
