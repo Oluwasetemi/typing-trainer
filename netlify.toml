@@ -1,0 +1,24 @@
+[build]
+  command = "bun run build:all"
+  publish = ".output/public"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[functions]
+  directory = ".output/server"
+
+[[headers]]
+  for = "/api/og"
+  [headers.values]
+    Cache-Control = "public, max-age=3600, s-maxage=86400"

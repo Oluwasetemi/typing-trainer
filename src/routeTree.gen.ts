@@ -9,8 +9,26 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SpectatorRouteImport } from './routes/spectator'
+import { Route as SoloRouteImport } from './routes/solo'
+import { Route as SessionRouteImport } from './routes/session'
 import { Route as IndexRouteImport } from './routes/index'
 
+const SpectatorRoute = SpectatorRouteImport.update({
+  id: '/spectator',
+  path: '/spectator',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SoloRoute = SoloRouteImport.update({
+  id: '/solo',
+  path: '/solo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SessionRoute = SessionRouteImport.update({
+  id: '/session',
+  path: '/session',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +37,61 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/session': typeof SessionRoute
+  '/solo': typeof SoloRoute
+  '/spectator': typeof SpectatorRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/session': typeof SessionRoute
+  '/solo': typeof SoloRoute
+  '/spectator': typeof SpectatorRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/session': typeof SessionRoute
+  '/solo': typeof SoloRoute
+  '/spectator': typeof SpectatorRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/session' | '/solo' | '/spectator'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/session' | '/solo' | '/spectator'
+  id: '__root__' | '/' | '/session' | '/solo' | '/spectator'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  SessionRoute: typeof SessionRoute
+  SoloRoute: typeof SoloRoute
+  SpectatorRoute: typeof SpectatorRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/spectator': {
+      id: '/spectator'
+      path: '/spectator'
+      fullPath: '/spectator'
+      preLoaderRoute: typeof SpectatorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/solo': {
+      id: '/solo'
+      path: '/solo'
+      fullPath: '/solo'
+      preLoaderRoute: typeof SoloRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/session': {
+      id: '/session'
+      path: '/session'
+      fullPath: '/session'
+      preLoaderRoute: typeof SessionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,6 +104,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  SessionRoute: SessionRoute,
+  SoloRoute: SoloRoute,
+  SpectatorRoute: SpectatorRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

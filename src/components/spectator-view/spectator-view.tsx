@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef } from 'react';
 
 import { useRealtimeTyping } from '../../hooks/use-realtime-typing';
 import { calcAccuracy, calcWPM, formatTime } from '../../utils/metrics';
-import StatCard from '../stats-panel/stat-card';
+import { StatCard } from '../stats-panel';
 
 type SpectatorViewProps = {
   sessionId: string;

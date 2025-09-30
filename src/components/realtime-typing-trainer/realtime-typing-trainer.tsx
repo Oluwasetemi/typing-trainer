@@ -3,10 +3,10 @@ import { useEffect } from 'react';
 import { TypingProvider } from '../../context/typing-context';
 import { useRealtimeTyping } from '../../hooks/use-realtime-typing';
 import { useTyping } from '../../hooks/use-typing';
-import ProgressBar from '../progress-bar/progress-bar';
-import StatsPanel from '../stats-panel/stats-panel';
-import TextDisplay from '../text-display/text-display';
-import TypingInput from '../typing-input/typing-input';
+import { ProgressBar } from '../progress-bar';
+import { StatsPanel } from '../stats-panel';
+import { TextDisplay } from '../text-display';
+import { TypingInput } from '../typing-input';
 
 type RealtimeTypingTrainerProps = {
   sessionId: string;
