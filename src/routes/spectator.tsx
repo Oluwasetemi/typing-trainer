@@ -63,7 +63,7 @@ export const Route = createFileRoute('/spectator')({
     links: [
       {
         rel: 'canonical',
-        href: `https://typing-trainer.vercel.app/spectator?sessionId=${match.search.sessionId}`,
+        href: `https://deploy-preview-3--realtime-typing-trainer.netlify.app/spectator?sessionId=${match.search.sessionId}`,
       },
     ],
   }),

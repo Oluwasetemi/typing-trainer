@@ -31,7 +31,7 @@ export const Route = createRootRoute({
       },
       {
         property: 'og:url',
-        content: 'https://typing-trainer.vercel.app',
+        content: 'https://deploy-preview-3--realtime-typing-trainer.netlify.app',
       },
       {
         property: 'og:image',
@@ -61,7 +61,7 @@ export const Route = createRootRoute({
       },
       {
         rel: 'canonical',
-        href: 'https://typing-trainer.vercel.app',
+        href: 'https://deploy-preview-3--realtime-typing-trainer.netlify.app',
       },
     ],
   }),

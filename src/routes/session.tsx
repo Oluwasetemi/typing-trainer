@@ -63,7 +63,7 @@ export const Route = createFileRoute('/session')({
     links: [
       {
         rel: 'canonical',
-        href: `https://typing-trainer.vercel.app/session?sessionId=${match.search.sessionId}`,
+        href: `https://deploy-preview-3--realtime-typing-trainer.netlify.app/session?sessionId=${match.search.sessionId}`,
       },
     ],
   }),

@@ -47,7 +47,7 @@ export const Route = createFileRoute('/solo')({
     links: [
       {
         rel: 'canonical',
-        href: 'https://typing-trainer.vercel.app/solo',
+        href: 'https://deploy-preview-3--realtime-typing-trainer.netlify.app/solo',
       },
     ],
   }),
