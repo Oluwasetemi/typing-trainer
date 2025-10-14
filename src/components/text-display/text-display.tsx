@@ -55,53 +55,70 @@ export default function TextDisplay() {
     [state.finished],
   );
 
-  const renderCharacter = (char: string, index: number) => {
-    let className = 'text-lg font-mono ';
+  const renderText = () => {
+    const words = sourceText.split(' ');
+    let charIndex = 0;
 
-    if (index === currentIndex) {
-      // Current character to type
-      className += 'bg-blue-300 text-white animate-pulse';
-    }
-    else if (index < currentIndex) {
-      // Already typed character
-      if (errors.has(index)) {
-        className += 'bg-red-200 text-red-800'; // Incorrect
-      }
-      else {
-        className += 'bg-green-100 text-green-800'; // Correct
-      }
-    }
-    else {
-      // Not yet typed
-      className += 'text-gray-600';
-    }
+    return words.map((word, wordIndex) => {
+      const wordEndIndex = charIndex + word.length;
 
-    return (
-      <span
-        key={index}
-        className={className}
-        aria-label={
-          index === currentIndex ? `Current character: ${char}` : undefined
+      const wordSpans = word.split('').map((char, charPos) => {
+        const globalIndex = charIndex + charPos;
+        let className = 'text-lg font-mono ';
+
+        if (globalIndex === currentIndex) {
+          // Current character to type
+          className += 'bg-blue-300 text-white animate-pulse';
         }
-      >
-        {char === ' ' ? '\u00A0' : char}
-      </span>
-    );
+        else if (globalIndex < currentIndex) {
+          // Already typed character
+          if (errors.has(globalIndex)) {
+            className += 'bg-red-200 text-red-800'; // Incorrect
+          }
+          else {
+            className += 'bg-green-100 text-green-800'; // Correct
+          }
+        }
+        else {
+          // Not yet typed
+          className += 'text-gray-600';
+        }
+
+        return (
+          <span
+            key={globalIndex}
+            className={className}
+            aria-label={
+              globalIndex === currentIndex ? `Current character: ${char}` : undefined
+            }
+          >
+            {char}
+          </span>
+        );
+      });
+
+      charIndex = wordEndIndex + 1; // +1 for the space
+
+      return (
+        <span key={wordIndex} className="whitespace-nowrap">
+          {wordSpans}
+          {wordIndex < words.length - 1 && <span className="text-lg font-mono"> </span>}
+        </span>
+      );
+    });
   };
 
   return (
     <div className="w-full bg-gray-50 p-6 rounded-lg border-2 focus-within:border-blue-400 transition-colors">
       <div
         ref={containerRef}
-        className="notranslate h-[70px] break-all leading-relaxed select-none text-justify max-h-40 overflow-auto"
+        className="notranslate h-[200px] sm:h-[250px] md:h-[300px] lg:h-[350px] break-all leading-relaxed select-none overflow-auto"
         aria-live="polite"
         aria-label="Typing practice text"
         role="textbox"
         aria-readonly="true"
       >
-        {sourceText
-          .split('')
-          .map((char, index) => renderCharacter(char, index))}
+        {renderText()}
       </div>
 
       {/* Progress indicator */}

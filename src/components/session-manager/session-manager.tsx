@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useTypingSession } from '../../hooks/use-typing-session';
 
 type SessionManagerProps = {
-  onStartSession: (sessionId: string, role: 'typist' | 'spectator') => void;
+  onStartSession: (sessionId: string, role: 'typist' | 'spectator', sessionName?: string) => void;
 };
 
 export default function SessionManager({
@@ -23,7 +23,7 @@ export default function SessionManager({
 
   const handleJoinAsTypist = () => {
     if (currentSessionId) {
-      onStartSession(currentSessionId, 'typist');
+      onStartSession(currentSessionId, 'typist', sessionName);
       setShowShareModal(false);
     }
   };

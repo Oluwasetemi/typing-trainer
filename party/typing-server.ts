@@ -21,6 +21,7 @@ export type TypingSessionState = {
   isActive: boolean;
   typistId: string | null;
   spectatorCount: number;
+  sessionName: string | null;
 };
 
 export default class TypingServer implements Party.Server {
@@ -36,6 +37,7 @@ export default class TypingServer implements Party.Server {
     isActive: false,
     typistId: null,
     spectatorCount: 0,
+    sessionName: null,
   };
 
   private typistConnection: Party.Connection | null = null;
@@ -46,12 +48,14 @@ export default class TypingServer implements Party.Server {
     const url = new URL(ctx.request.url);
     const role = url.searchParams.get('role') || 'spectator';
     const userId = url.searchParams.get('userId') || `user-${Date.now()}`;
+    const sessionName = url.searchParams.get('sessionName');
 
     if (role === 'typist' && !this.typistConnection) {
       // First typist connection
       this.typistConnection = connection;
       this.sessionState.typistId = userId;
       this.sessionState.isActive = true;
+      this.sessionState.sessionName = sessionName;
 
       // Send current session state to the typist
       connection.send(
@@ -180,6 +184,7 @@ export default class TypingServer implements Party.Server {
     }
   }
 
+  // to allow API connections
   async onRequest(request: Party.Request) {
     if (request.method === 'GET') {
       // Return current session state
@@ -194,6 +199,7 @@ export default class TypingServer implements Party.Server {
       this.sessionState = {
         ...this.sessionState,
         sourceText: (sessionData as TypingSessionState).sourceText,
+        sessionName: (sessionData as TypingSessionState).sessionName,
         currentIndex: 0,
         errors: [],
         startTime: null,

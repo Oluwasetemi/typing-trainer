@@ -1,77 +1,73 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { useState } from 'react';
+import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 
-import RealtimeTypingTrainer from '../components/realtime-typing-trainer/realtime-typing-trainer';
-import SessionManager from '../components/session-manager/session-manager';
-import SpectatorView from '../components/spectator-view/spectator-view';
-import TypingTrainer from '../components/typing-trainer';
+import { SessionManager } from '../components/session-manager';
+
+type SearchParams = {
+  session?: string;
+  role?: 'typist' | 'spectator';
+};
 
 export const Route = createFileRoute('/')({
+  ssr: true,
+  validateSearch: (search: Record<string, unknown>): SearchParams => {
+    return {
+      session: search.session as string | undefined,
+      role: (search.role as 'typist' | 'spectator') || undefined,
+    };
+  },
+  beforeLoad: ({ location }) => {
+    const urlParams = new URLSearchParams(location.search);
+    const sessionId = urlParams.get('session');
+    const role = urlParams.get('role') as 'typist' | 'spectator';
+    const sessionName = urlParams.get('sessionName');
+
+    if (sessionId === 'solo') {
+      throw redirect({ to: '/solo' });
+    }
+
+    if (sessionId && role === 'typist') {
+      throw redirect({
+        to: '/session',
+        search: { sessionId, ...(sessionName && { sessionName }) },
+      });
+    }
+
+    if (sessionId && role === 'spectator') {
+      throw redirect({
+        to: '/spectator',
+        search: { sessionId, ...(sessionName && { sessionName }) },
+      });
+    }
+  },
   component: App,
 });
 
-type AppMode = 'session-manager' | 'typing' | 'spectator' | 'solo';
-
 function App() {
-  const [userId] = useState(
-    () => `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-  );
-  // a dummy state to force re-render
-  const [, forceUpdate] = useState({});
-
-  // Derive state from URL parameters
-  const urlParams = new URLSearchParams(window.location.search);
-  const sessionId = urlParams.get('session');
-  const role = (urlParams.get('role') as 'typist' | 'spectator') || 'spectator';
-  const mode: AppMode = sessionId
-    ? sessionId === 'solo'
-      ? 'solo'
-      : role === 'typist'
-        ? 'typing'
-        : 'spectator'
-    : 'session-manager';
+  const navigate = useNavigate();
 
   const handleStartSession = (
     newSessionId: string,
     newRole: 'typist' | 'spectator',
+    sessionName?: string,
   ) => {
-    // Update URL and force re-render
-    const newUrl = new URL(window.location.href);
-    newUrl.searchParams.set('session', newSessionId);
-    newUrl.searchParams.set('role', newRole);
-    window.history.pushState({}, '', newUrl.toString());
+    if (newSessionId === 'solo') {
+      navigate({ to: '/solo' });
+      return;
+    }
 
-    // Force re-render to pick up new URL parameters
-    forceUpdate({});
+    if (newRole === 'typist') {
+      navigate({
+        to: '/session',
+        search: { sessionId: newSessionId, ...(sessionName && { sessionName }) },
+      });
+    }
+    else {
+      navigate({
+        to: '/spectator',
+        search: { sessionId: newSessionId, ...(sessionName && { sessionName }) },
+      });
+    }
   };
 
-  // const handleBackToSessions = () => {
-  //   setMode('session-manager')
-  //   setSessionId(null)
-
-  //   // Clear URL parameters
-  //   const newUrl = new URL(window.location.href)
-  //   newUrl.search = ''
-  //   window.history.pushState({}, '', newUrl.toString())
-  // }
-
-  return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      {mode === 'session-manager' && (
-        <SessionManager onStartSession={handleStartSession} />
-      )}
-
-      {mode === 'typing' && sessionId && (
-        <RealtimeTypingTrainer sessionId={sessionId} userId={userId} />
-      )}
-
-      {mode === 'spectator' && sessionId && (
-        <SpectatorView sessionId={sessionId} userId={userId} />
-      )}
-
-      {mode === 'solo' && (
-        <TypingTrainer />
-      )}
-    </div>
-  );
+  return <SessionManager onStartSession={handleStartSession} />;
 }

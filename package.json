@@ -1,19 +1,50 @@
 {
   "name": "typing",
   "type": "module",
+  "version": "1.0.0",
   "private": true,
+  "packageManager": "bun@1.1.34",
+  "description": "Real-time Typing Trainer",
+  "author": "Oluwasetemi Ojo",
+  "license": "MIT",
+  "homepage": "https://realtime-typing-trainer.netlify.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/oluwasetemi/typing-trainer"
+  },
+  "keywords": [
+    "typing",
+    "trainer",
+    "real-time",
+    "collaboration",
+    "multiplayer",
+    "partykit"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "dev": "vite --port 3000",
     "dev:party": "partykit dev",
     "dev:all": "concurrently \"npm run dev\" \"npm run dev:party\"",
+    "dev:nitro": "nitro dev",
+    "dev:full": "node scripts/dev.js",
+    "dev:simple": "node scripts/dev-simple.js",
+    "dev:api": "nitro dev --port 3001",
     "start": "vite --port 3000",
     "build": "vite build && tsc",
+    "build:nitro": "nitro build",
+    "build:all": "npm run build && npm run build:nitro",
     "serve": "vite preview",
+    "preview": "nitro preview",
     "test": "vitest run",
     "lint": "eslint",
+    "lint:fix": "eslint --fix",
     "format": "prettier",
     "check": "prettier --write . && eslint --fix",
-    "deploy:party": "partykit deploy"
+    "deploy:party": "partykit deploy",
+    "postinstall": "nitro prepare",
+    "types": "nitro prepare"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.0.6",
@@ -21,6 +52,8 @@
     "@tanstack/react-router": "^1.132.0",
     "@tanstack/react-router-devtools": "^1.132.0",
     "@tanstack/router-plugin": "^1.132.0",
+    "@vercel/og": "^0.8.5",
+    "nitropack": "^2.12.6",
     "partykit": "^0.0.115",
     "partysocket": "^1.1.5",
     "react": "^19.0.0",

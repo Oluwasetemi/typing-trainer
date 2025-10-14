@@ -5,19 +5,24 @@
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "baseUrl": ".",
     "module": "ESNext",
-
     /* Bundler mode */
     "moduleResolution": "bundler",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "#imports": ["./.nitro/types/nitro-imports"]
     },
-    "types": ["vite/client"],
+
+    /* Nitro-specific optimizations */
+    "resolveJsonModule": true,
+    "types": ["vite/client", "node", "vitest", "./.nitro/types/nitro"],
     "allowImportingTsExtensions": true,
     "strict": true,
     "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noEmit": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "verbatimModuleSyntax": true,
 
     /* Linting */
@@ -29,6 +34,13 @@
     "**/*.tsx",
     "eslint.config.js",
     "prettier.config.js",
-    "vite.config.js"
+    "vite.config.js",
+    "nitro.config.ts",
+    "api/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    ".output",
+    "dist"
   ]
 }

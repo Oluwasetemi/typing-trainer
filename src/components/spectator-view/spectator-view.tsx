@@ -2,21 +2,24 @@ import { useEffect, useMemo, useRef } from 'react';
 
 import { useRealtimeTyping } from '../../hooks/use-realtime-typing';
 import { calcAccuracy, calcWPM, formatTime } from '../../utils/metrics';
-import StatCard from '../stats-panel/stat-card';
+import { StatCard } from '../stats-panel';
 
 type SpectatorViewProps = {
   sessionId: string;
   userId?: string;
+  sessionName?: string;
 };
 
 export default function SpectatorView({
   sessionId,
   userId,
+  sessionName,
 }: SpectatorViewProps) {
   const { realtimeState, isConnected, connectionError } = useRealtimeTyping({
     roomId: sessionId,
     role: 'spectator',
     userId,
+    sessionName,
     enabled: true,
   });
 
@@ -83,32 +86,53 @@ export default function SpectatorView({
     [realtimeState],
   );
 
-  const renderCharacter = (char: string, index: number) => {
-    let className = 'text-lg font-mono ';
+  const renderText = () => {
+    const words = realtimeState.sourceText.split(' ');
+    let charIndex = 0;
 
-    if (index === realtimeState.currentIndex) {
-      // Current character being typed
-      className += 'bg-blue-300 text-white animate-pulse';
-    }
-    else if (index < realtimeState.currentIndex) {
-      // Already typed character
-      if (realtimeState.errors.has(index)) {
-        className += 'bg-red-200 text-red-800'; // Incorrect
-      }
-      else {
-        className += 'bg-green-100 text-green-800'; // Correct
-      }
-    }
-    else {
-      // Not yet typed
-      className += 'text-gray-600';
-    }
+    return words.map((word, wordIndex) => {
+      const wordSpans = word.split('').map((char, charPos) => {
+        const globalIndex = charIndex + charPos;
+        let className = 'text-lg font-mono ';
 
-    return (
-      <span key={index} className={className} data-char-index={index}>
-        {char === ' ' ? '\u00A0' : char}
-      </span>
-    );
+        if (globalIndex === realtimeState.currentIndex) {
+          // Current character being typed
+          className += 'bg-blue-300 text-white animate-pulse';
+        }
+        else if (globalIndex < realtimeState.currentIndex) {
+          // Already typed character
+          if (realtimeState.errors.has(globalIndex)) {
+            className += 'bg-red-200 text-red-800'; // Incorrect
+          }
+          else {
+            className += 'bg-green-100 text-green-800'; // Correct
+          }
+        }
+        else {
+          // Not yet typed
+          className += 'text-gray-600';
+        }
+
+        return (
+          <span
+            key={globalIndex}
+            className={className}
+            data-char-index={globalIndex}
+          >
+            {char}
+          </span>
+        );
+      });
+
+      charIndex = charIndex + word.length + 1; // +1 for the space
+
+      return (
+        <span key={wordIndex} className="whitespace-nowrap">
+          {wordSpans}
+          {wordIndex < words.length - 1 && <span className="text-lg font-mono"> </span>}
+        </span>
+      );
+    });
   };
 
   if (connectionError) {
@@ -173,7 +197,7 @@ export default function SpectatorView({
       {/* Header */}
       <header className="text-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800 mb-2">
-          👀 Spectator Mode
+          {realtimeState.sessionName || '👀 Spectator Mode'}
         </h1>
         <div className="flex items-center justify-center gap-4 text-sm text-gray-600">
           <div className="flex items-center gap-2">
@@ -192,6 +216,15 @@ export default function SpectatorView({
               <span>
                 Typist:
                 {realtimeState.typistId}
+              </span>
+            </>
+          )}
+          {realtimeState.sessionName && (
+            <>
+              <span>•</span>
+              <span>
+                Session:
+                {realtimeState.sessionName}
               </span>
             </>
           )}
@@ -230,11 +263,9 @@ export default function SpectatorView({
           <div className="bg-gray-50 p-6 rounded-lg border-2 border-blue-200">
             <div
               ref={textContainerRef}
-              className="leading-relaxed text-justify max-h-40 overflow-y-auto"
+              className="h-[200px] sm:h-[250px] md:h-[300px] lg:h-[350px] break-all leading-relaxed overflow-y-auto"
             >
-              {realtimeState.sourceText
-                .split('')
-                .map((char, index) => renderCharacter(char, index))}
+              {renderText()}
             </div>
             <div className="mt-4 flex items-center justify-between text-sm text-gray-500">
               <span>

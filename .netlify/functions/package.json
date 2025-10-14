@@ -1,0 +1,10 @@
+{
+  "name": "netlify-functions",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Netlify Functions for Real-time Typing Trainer",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {}
+}

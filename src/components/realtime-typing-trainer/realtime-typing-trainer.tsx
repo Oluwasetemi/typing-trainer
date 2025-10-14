@@ -1,21 +1,23 @@
 import { useEffect } from 'react';
 
-import { TypingProvider } from '../../context/typing-context';
-import { useRealtimeTyping } from '../../hooks/use-realtime-typing';
-import { useTyping } from '../../hooks/use-typing';
-import ProgressBar from '../progress-bar/progress-bar';
-import StatsPanel from '../stats-panel/stats-panel';
-import TextDisplay from '../text-display/text-display';
-import TypingInput from '../typing-input/typing-input';
+import { ProgressBar } from '@/components/progress-bar';
+import { StatsPanel } from '@/components/stats-panel';
+import { TextDisplay } from '@/components/text-display';
+import { TypingInput } from '@/components/typing-input';
+import { TypingProvider } from '@/context/typing-context';
+import { useRealtimeTyping } from '@/hooks/use-realtime-typing';
+import { useTyping } from '@/hooks/use-typing';
 
 type RealtimeTypingTrainerProps = {
   sessionId: string;
   userId?: string;
+  sessionName?: string;
 };
 
 function RealtimeTypingTrainerContent({
   sessionId,
   userId,
+  sessionName,
 }: RealtimeTypingTrainerProps) {
   const { state } = useTyping();
   const {
@@ -28,6 +30,7 @@ function RealtimeTypingTrainerContent({
     roomId: sessionId,
     role: 'typist',
     userId,
+    sessionName,
     enabled: sessionId !== 'solo',
   });
 
@@ -143,7 +146,9 @@ function RealtimeTypingTrainerContent({
             <div className="text-sm text-gray-500">
               Session:
               {' '}
-              {sessionId === 'solo' ? 'Solo Practice' : sessionId.slice(-8)}
+              {sessionId === 'solo'
+                ? 'Solo Practice'
+                : (realtimeState.sessionName || sessionId.slice(-8))}
             </div>
           </div>
         </div>
@@ -151,7 +156,7 @@ function RealtimeTypingTrainerContent({
         <h1 className="text-3xl font-bold text-gray-800 mb-2">
           {sessionId === 'solo'
             ? 'Solo Typing Practice'
-            : 'Live Typing Session'}
+            : (realtimeState.sessionName || 'Live Typing Session')}
         </h1>
         <p className="text-gray-600">
           {sessionId === 'solo'

@@ -10,12 +10,14 @@ export type RealtimeTypingState = {
   isConnected: boolean;
   connectionError: string | null;
   typistId: string | null;
+  sessionName: string | null;
 } & TypingState;
 
 type UseRealtimeTypingOptions = {
   roomId: string;
   role: 'typist' | 'spectator';
   userId?: string;
+  sessionName?: string;
   enabled?: boolean;
   host?: string;
 };
@@ -31,6 +33,7 @@ export function useRealtimeTyping(options: UseRealtimeTypingOptions) {
     roomId,
     role,
     userId = `user-${Date.now()}`,
+    sessionName,
     enabled = true,
     host = import.meta.env.DEV
       ? 'localhost:1999'
@@ -50,6 +53,7 @@ export function useRealtimeTyping(options: UseRealtimeTypingOptions) {
       isConnected: false,
       connectionError: null,
       typistId: null,
+      sessionName: null,
     }),
   );
 
@@ -93,6 +97,7 @@ export function useRealtimeTyping(options: UseRealtimeTypingOptions) {
         query: {
           role,
           userId,
+          ...(sessionName && { sessionName }),
         },
       });
 
@@ -116,6 +121,7 @@ export function useRealtimeTyping(options: UseRealtimeTypingOptions) {
                 ...prev,
                 ...typingEvent.data,
                 errors: new Set(typingEvent.data.errors || []),
+                sessionName: typingEvent.data.sessionName || prev.sessionName,
               }));
               break;
 
@@ -201,7 +207,7 @@ export function useRealtimeTyping(options: UseRealtimeTypingOptions) {
         connectionError: 'Failed to create connection',
       }));
     }
-  }, [enabled, host, roomId, role, userId, isTypist]);
+  }, [enabled, host, roomId, role, userId, sessionName, isTypist]);
 
   const disconnect = useCallback(() => {
     if (retryTimeoutRef.current) {

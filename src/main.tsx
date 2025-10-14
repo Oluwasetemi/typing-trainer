@@ -17,11 +17,11 @@ const router = createRouter({
 });
 
 // Register the router instance for type safety
-// declare module '@tanstack/react-router' {
-//   type Register = {
-//     router: typeof router;
-//   };
-// }
+declare module '@tanstack/react-router' {
+  type Register = {
+    router: typeof router;
+  };
+}
 
 // Render the app
 const rootElement = document.getElementById('app');
