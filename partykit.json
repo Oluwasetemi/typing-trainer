@@ -1,5 +1,9 @@
 {
   "name": "typing-trainer",
   "main": "party/typing-server.ts",
+  "parties": {
+    "typing": "party/typing-server.ts",
+    "competition": "party/competition-server.ts"
+  },
   "compatibilityDate": "2025-09-26"
 }

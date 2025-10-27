@@ -145,6 +145,23 @@ export default function SessionManager({
             Start Solo Practice
           </button>
         </div>
+
+        {/* Competition Mode */}
+        <div className="bg-gradient-to-r from-orange-50 to-red-50 p-6 rounded-lg border border-orange-200">
+          <h2 className="text-xl font-semibold text-orange-800 mb-4">
+            🏁 Competition Mode
+          </h2>
+          <p className="text-orange-600 mb-4">
+            Race against friends in real-time competitions
+          </p>
+
+          <a
+            href="/competition"
+            className="block w-full px-4 py-3 bg-gradient-to-r from-orange-500 to-red-500 text-white text-center rounded-lg hover:from-orange-600 hover:to-red-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-all font-medium shadow-md"
+          >
+            Enter Competition Mode
+          </a>
+        </div>
       </div>
 
       {/* Share Session Modal */}

@@ -112,10 +112,16 @@ export const TypingContext = createContext<TypingContextValue | undefined>(
 
 type TypingProviderProps = {
   children: ReactNode;
+  initialText?: string;
 };
 
-export function TypingProvider({ children }: TypingProviderProps) {
-  const [state, dispatch] = useReducer(typingReducer, initialState);
+export function TypingProvider({ children, initialText }: TypingProviderProps) {
+  const [state, dispatch] = useReducer(
+    typingReducer,
+    initialText
+      ? { ...initialState, sourceText: initialText }
+      : initialState,
+  );
 
   const value = useMemo(() => ({ state, dispatch }), [state, dispatch]);
 

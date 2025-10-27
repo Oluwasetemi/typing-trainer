@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SpectatorRouteImport } from './routes/spectator'
 import { Route as SoloRouteImport } from './routes/solo'
 import { Route as SessionRouteImport } from './routes/session'
+import { Route as CompetitionRouteImport } from './routes/competition'
 import { Route as IndexRouteImport } from './routes/index'
 
 const SpectatorRoute = SpectatorRouteImport.update({
@@ -29,6 +30,11 @@ const SessionRoute = SessionRouteImport.update({
   path: '/session',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CompetitionRoute = CompetitionRouteImport.update({
+  id: '/competition',
+  path: '/competition',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -37,12 +43,14 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/competition': typeof CompetitionRoute
   '/session': typeof SessionRoute
   '/solo': typeof SoloRoute
   '/spectator': typeof SpectatorRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/competition': typeof CompetitionRoute
   '/session': typeof SessionRoute
   '/solo': typeof SoloRoute
   '/spectator': typeof SpectatorRoute
@@ -50,20 +58,22 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/competition': typeof CompetitionRoute
   '/session': typeof SessionRoute
   '/solo': typeof SoloRoute
   '/spectator': typeof SpectatorRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/session' | '/solo' | '/spectator'
+  fullPaths: '/' | '/competition' | '/session' | '/solo' | '/spectator'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/session' | '/solo' | '/spectator'
-  id: '__root__' | '/' | '/session' | '/solo' | '/spectator'
+  to: '/' | '/competition' | '/session' | '/solo' | '/spectator'
+  id: '__root__' | '/' | '/competition' | '/session' | '/solo' | '/spectator'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CompetitionRoute: typeof CompetitionRoute
   SessionRoute: typeof SessionRoute
   SoloRoute: typeof SoloRoute
   SpectatorRoute: typeof SpectatorRoute
@@ -92,6 +102,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SessionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/competition': {
+      id: '/competition'
+      path: '/competition'
+      fullPath: '/competition'
+      preLoaderRoute: typeof CompetitionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -104,6 +121,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CompetitionRoute: CompetitionRoute,
   SessionRoute: SessionRoute,
   SoloRoute: SoloRoute,
   SpectatorRoute: SpectatorRoute,

@@ -100,9 +100,8 @@ export default function TextDisplay() {
       charIndex = wordEndIndex + 1; // +1 for the space
 
       return (
-        <span key={wordIndex} className="whitespace-nowrap">
+        <span key={wordIndex} className="inline-block mr-[0.5ch]">
           {wordSpans}
-          {wordIndex < words.length - 1 && <span className="text-lg font-mono"> </span>}
         </span>
       );
     });
@@ -112,32 +111,13 @@ export default function TextDisplay() {
     <div className="w-full bg-gray-50 p-6 rounded-lg border-2 focus-within:border-blue-400 transition-colors">
       <div
         ref={containerRef}
-        className="notranslate h-[200px] sm:h-[250px] md:h-[300px] lg:h-[350px] break-all leading-relaxed select-none overflow-auto"
+        className="notranslate h-[200px] sm:h-[250px] md:h-[300px] lg:h-[350px] break-words leading-relaxed select-none overflow-auto"
         aria-live="polite"
         aria-label="Typing practice text"
         role="textbox"
         aria-readonly="true"
       >
         {renderText()}
-      </div>
-
-      {/* Progress indicator */}
-      <div className="mt-4 flex items-center justify-between text-sm text-gray-500">
-        <span>
-          Progress:
-          {' '}
-          {currentIndex}
-          {' '}
-          /
-          {' '}
-          {sourceText.length}
-          {' '}
-          characters
-        </span>
-        <span>
-          {Math.round((currentIndex / sourceText.length) * 100)}
-          % complete
-        </span>
       </div>
     </div>
   );
