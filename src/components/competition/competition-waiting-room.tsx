@@ -1,12 +1,15 @@
-import type { CompetitionSession, Participant } from '../../types/competition.types';
+import type {
+  CompetitionSession,
+  Participant,
+} from '../../types/competition.types'
 
 type CompetitionWaitingRoomProps = {
-  session: CompetitionSession;
-  currentUserId: string;
-  onReady: (isReady: boolean) => void;
-  onStart: () => void;
-  onLeave: () => void;
-};
+  session: CompetitionSession
+  currentUserId: string
+  onReady: (isReady: boolean) => void
+  onStart: () => void
+  onLeave: () => void
+}
 
 export default function CompetitionWaitingRoom({
   session,
@@ -15,28 +18,24 @@ export default function CompetitionWaitingRoom({
   onStart,
   onLeave,
 }: CompetitionWaitingRoomProps) {
-  const participants = Object.values(session.participants);
-  const currentParticipant = session.participants[currentUserId];
-  const isHost = currentParticipant?.isHost || false;
-  const readyCount = participants.filter(p => p.isReady).length;
-  const totalCount = participants.length;
-  const canStart = totalCount >= session.settings.minParticipants;
+  const participants = Object.values(session.participants)
+  const currentParticipant = session.participants[currentUserId]
+  const isHost = currentParticipant?.isHost || false
+  const readyCount = participants.filter((p) => p.isReady).length
+  const totalCount = participants.length
+  const canStart = totalCount >= session.settings.minParticipants
 
   const copyCompetitionCode = () => {
     navigator.clipboard.writeText(session.code).then(() => {
       // Could add a toast notification here
-    });
-  };
+    })
+  }
 
   return (
     <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
       <header className="text-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">
-          Waiting Room
-        </h1>
-        <p className="text-gray-600">
-          {session.name}
-        </p>
+        <h1 className="text-3xl font-bold text-gray-800 mb-2">Waiting Room</h1>
+        <p className="text-gray-600">{session.name}</p>
       </header>
 
       {/* Competition Code */}
@@ -64,7 +63,8 @@ export default function CompetitionWaitingRoom({
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-semibold text-blue-800">
-              Ready: {readyCount} / {totalCount}
+              Ready:
+              {readyCount}/{totalCount}
             </p>
             <p className="text-xs text-blue-600">
               {canStart
@@ -75,8 +75,9 @@ export default function CompetitionWaitingRoom({
           {currentParticipant && (
             <button
               type="button"
+              title="Click me to show you are ready"
               onClick={() => onReady(!currentParticipant.isReady)}
-              className={`px-6 py-2 rounded-lg font-medium transition-all ${
+              className={`px-4 py-2 rounded-lg font-medium transition-all ${
                 currentParticipant.isReady
                   ? 'bg-green-500 text-white hover:bg-green-600'
                   : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
@@ -94,7 +95,7 @@ export default function CompetitionWaitingRoom({
           Participants ({totalCount}/{session.settings.maxParticipants})
         </h2>
         <div className="space-y-2">
-          {participants.map(participant => (
+          {participants.map((participant) => (
             <ParticipantCard
               key={participant.userId}
               participant={participant}
@@ -132,22 +133,20 @@ export default function CompetitionWaitingRoom({
         </p>
       )}
     </div>
-  );
+  )
 }
 
 function ParticipantCard({
   participant,
   isYou,
 }: {
-  participant: Participant;
-  isYou: boolean;
+  participant: Participant
+  isYou: boolean
 }) {
   return (
     <div
       className={`flex items-center justify-between p-3 rounded-lg border ${
-        isYou
-          ? 'bg-blue-50 border-blue-300'
-          : 'bg-gray-50 border-gray-200'
+        isYou ? 'bg-blue-50 border-blue-300' : 'bg-gray-50 border-gray-200'
       }`}
     >
       <div className="flex items-center gap-3">
@@ -190,5 +189,5 @@ function ParticipantCard({
         )}
       </div>
     </div>
-  );
+  )
 }
