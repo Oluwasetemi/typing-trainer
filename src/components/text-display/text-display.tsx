@@ -4,7 +4,7 @@ import { useTyping } from '../../hooks/use-typing';
 
 export default function TextDisplay() {
   const { state } = useTyping();
-  const { sourceText, currentIndex, errors } = state;
+  const { sourceText, currentIndex, errors, currentWordIndex, finished, typedWords } = state;
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to keep current character visible
@@ -60,34 +60,47 @@ export default function TextDisplay() {
     let charIndex = 0;
 
     return words.map((word, wordIndex) => {
+      const wordStartIndex = charIndex;
       const wordEndIndex = charIndex + word.length;
 
-      const wordSpans = word.split('').map((char, charPos) => {
-        const globalIndex = charIndex + charPos;
-        let className = 'text-lg font-mono ';
+      // Determine word status
+      let wordClassName = 'text-lg font-mono inline-block mr-[0.5ch] px-1 rounded transition-colors ';
 
+      // Check if this word has been typed (not empty)
+      const wordTyped = typedWords[wordIndex] && typedWords[wordIndex].length > 0;
+      const isCompleted = wordIndex < currentWordIndex || (finished && wordIndex === currentWordIndex);
+
+      if (isCompleted && wordTyped) {
+        // Word has been completed AND typed
+        if (errors.has(wordIndex)) {
+          // Entire word is incorrect
+          wordClassName += 'bg-red-200 text-red-800';
+        } else {
+          // Entire word is correct
+          wordClassName += 'bg-green-100 text-green-800';
+        }
+      } else if (wordIndex === currentWordIndex && !finished) {
+        // Currently typing this word - show it in gray/neutral color
+        wordClassName += 'bg-blue-50 text-gray-800';
+      } else {
+        // Not yet typed
+        wordClassName += 'text-gray-600';
+      }
+
+      // Render individual characters within the word for cursor positioning
+      const wordSpans = word.split('').map((char, charPos) => {
+        const globalIndex = wordStartIndex + charPos;
+        let charClassName = '';
+
+        // Highlight current character with cursor
         if (globalIndex === currentIndex) {
-          // Current character to type
-          className += 'bg-blue-300 text-white animate-pulse';
-        }
-        else if (globalIndex < currentIndex) {
-          // Already typed character
-          if (errors.has(globalIndex)) {
-            className += 'bg-red-200 text-red-800'; // Incorrect
-          }
-          else {
-            className += 'bg-green-100 text-green-800'; // Correct
-          }
-        }
-        else {
-          // Not yet typed
-          className += 'text-gray-600';
+          charClassName = 'border-b-2 border-blue-500 animate-pulse';
         }
 
         return (
           <span
             key={globalIndex}
-            className={className}
+            className={charClassName}
             aria-label={
               globalIndex === currentIndex ? `Current character: ${char}` : undefined
             }
@@ -100,7 +113,11 @@ export default function TextDisplay() {
       charIndex = wordEndIndex + 1; // +1 for the space
 
       return (
-        <span key={wordIndex} className="inline-block mr-[0.5ch]">
+        <span
+          key={wordIndex}
+          className={wordClassName}
+          aria-label={wordIndex === currentWordIndex ? `Currently typing: ${word}` : undefined}
+        >
           {wordSpans}
         </span>
       );

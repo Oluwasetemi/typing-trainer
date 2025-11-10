@@ -49,6 +49,8 @@ export function useRealtimeTyping(options: UseRealtimeTypingOptions) {
       endTime: null,
       finished: false,
       typedText: '',
+      currentWordIndex: 0,
+      typedWords: [''],
       spectatorCount: 0,
       isConnected: false,
       connectionError: null,

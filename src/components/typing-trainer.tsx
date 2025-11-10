@@ -1,4 +1,5 @@
 import { TypingProvider } from '../context/typing-context';
+import ErrorFeedback from './error-feedback/error-feedback';
 import ProgressBar from './progress-bar/progress-bar';
 import StatsPanel from './stats-panel/stats-panel';
 import TextDisplay from './text-display/text-display';
@@ -19,6 +20,11 @@ export default function TypingTrainer() {
         {/* Progress Bar */}
         <div className="mb-6">
           <ProgressBar />
+        </div>
+
+        {/* Error Feedback */}
+        <div className="mb-6">
+          <ErrorFeedback />
         </div>
 
         {/* Main Content */}

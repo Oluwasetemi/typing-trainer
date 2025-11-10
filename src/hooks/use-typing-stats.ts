@@ -46,9 +46,12 @@ export function useTypingStats(): TypingStats {
     return currentTime - state.startTime;
   }, [state.startTime, state.endTime, state.finished, currentTime]);
 
+  // Calculate words completed for accuracy (word-boundary approach)
+  const wordsCompleted = state.currentWordIndex + 1; // +1 because index is 0-based
+
   return {
     wpm: calcWPM(state.currentIndex, elapsedTime),
-    accuracy: calcAccuracy(state.errors.size, state.currentIndex),
+    accuracy: calcAccuracy(state.errors.size, wordsCompleted),
     elapsedTime,
     errorCount: state.errors.size,
     charactersTyped: state.currentIndex,
