@@ -1,5 +1,7 @@
 import { useState } from 'react';
 
+import { Icons } from '../../utils/icons';
+
 type CompetitionSessionManagerProps = {
   onCreateCompetition: (competitionName: string) => void;
   onJoinCompetition: (competitionId: string, username: string) => void;
@@ -30,8 +32,9 @@ export default function CompetitionSessionManager({
   return (
     <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-6">
       <header className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">
-          🏁 Competition Mode
+        <h1 className="text-3xl font-bold text-gray-800 mb-2 flex items-center justify-center gap-2">
+          <Icons.Flag size={32} />
+          Competition Mode
         </h1>
         <p className="text-gray-600">
           Race against friends in real-time typing competitions
@@ -41,8 +44,9 @@ export default function CompetitionSessionManager({
       <div className="space-y-6">
         {/* Create Competition */}
         <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-6 rounded-lg border border-purple-200">
-          <h2 className="text-xl font-semibold text-purple-800 mb-4">
-            🎮 Create Competition
+          <h2 className="text-xl font-semibold text-purple-800 mb-4 flex items-center gap-2">
+            <Icons.GameController size={24} />
+            Create Competition
           </h2>
           <p className="text-purple-600 mb-4">
             Start a new competition and invite others to race
@@ -78,8 +82,9 @@ export default function CompetitionSessionManager({
 
         {/* Join Competition */}
         <div className="bg-gradient-to-r from-green-50 to-teal-50 p-6 rounded-lg border border-green-200">
-          <h2 className="text-xl font-semibold text-green-800 mb-4">
-            🚀 Join Competition
+          <h2 className="text-xl font-semibold text-green-800 mb-4 flex items-center gap-2">
+            <Icons.Rocket size={24} />
+            Join Competition
           </h2>
           <p className="text-green-600 mb-4">
             Enter a competition code to join an existing race
@@ -139,11 +144,26 @@ export default function CompetitionSessionManager({
             How it works:
           </h3>
           <ul className="text-sm text-blue-700 space-y-1">
-            <li>🎯 Create or join a competition room</li>
-            <li>⏰ Wait for other participants in the lobby</li>
-            <li>🏁 Race begins after countdown</li>
-            <li>📊 Live leaderboard shows everyone's progress</li>
-            <li>🏆 Winners are crowned at the finish!</li>
+            <li className="flex items-center gap-2">
+              <Icons.Target size={16} />
+              Create or join a competition room
+            </li>
+            <li className="flex items-center gap-2">
+              <Icons.Timer size={16} />
+              Wait for other participants in the lobby
+            </li>
+            <li className="flex items-center gap-2">
+              <Icons.Flag size={16} />
+              Race begins after countdown
+            </li>
+            <li className="flex items-center gap-2">
+              <Icons.Stats size={16} />
+              Live leaderboard shows everyone's progress
+            </li>
+            <li className="flex items-center gap-2">
+              <Icons.Trophy size={16} />
+              Winners are crowned at the finish!
+            </li>
           </ul>
         </div>
       </div>

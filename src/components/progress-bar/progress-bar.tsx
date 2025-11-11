@@ -1,4 +1,5 @@
 import { useTyping } from '../../hooks/use-typing';
+import { Icons } from '../../utils/icons';
 
 export default function ProgressBar() {
   const { state } = useTyping();
@@ -56,7 +57,10 @@ export default function ProgressBar() {
           characters
         </span>
         {state.finished && (
-          <span className="text-green-600 font-medium">✅ Complete!</span>
+          <span className="text-green-600 font-medium flex items-center gap-1">
+            <Icons.Check size={16} />
+            Complete!
+          </span>
         )}
       </div>
     </div>

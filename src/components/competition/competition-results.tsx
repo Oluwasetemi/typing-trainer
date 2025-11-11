@@ -1,6 +1,7 @@
 import type { LeaderboardEntry } from '../../types/competition.types';
 
 import { formatTime } from '../../utils/metrics';
+import { Icons } from '../../utils/icons';
 
 type CompetitionResultsProps = {
   leaderboard: LeaderboardEntry[];
@@ -23,8 +24,9 @@ export default function CompetitionResults({
       <div className="max-w-4xl w-full bg-white rounded-lg shadow-2xl p-8">
         {/* Header */}
         <header className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">
-            🏁 Race Complete!
+          <h1 className="text-4xl font-bold text-gray-800 mb-2 flex items-center justify-center gap-3">
+            <Icons.Flag size={36} />
+            Race Complete!
           </h1>
           <p className="text-gray-600">{competitionName}</p>
         </header>
@@ -85,16 +87,18 @@ export default function CompetitionResults({
           <button
             type="button"
             onClick={onRaceAgain}
-            className="flex-1 px-6 py-3 bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-lg hover:from-green-600 hover:to-teal-600 font-semibold shadow-lg transition-all"
+            className="flex-1 px-6 py-3 bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-lg hover:from-green-600 hover:to-teal-600 font-semibold shadow-lg transition-all flex items-center justify-center gap-2"
           >
-            🔄 Race Again
+            <Icons.Reload size={20} />
+            Race Again
           </button>
           <button
             type="button"
             onClick={onNewCompetition}
-            className="flex-1 px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg hover:from-purple-600 hover:to-blue-600 font-semibold shadow-lg transition-all"
+            className="flex-1 px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-lg hover:from-purple-600 hover:to-blue-600 font-semibold shadow-lg transition-all flex items-center justify-center gap-2"
           >
-            ➕ New Competition
+            <Icons.Add size={20} />
+            New Competition
           </button>
         </div>
       </div>
@@ -115,10 +119,10 @@ function PodiumCard({
     3: 'h-28',
   };
 
-  const medals = {
-    1: '🥇',
-    2: '🥈',
-    3: '🥉',
+  const MedalIcon = {
+    1: () => <Icons.Medal1st size={40} className="text-yellow-100" />,
+    2: () => <Icons.Medal2nd size={40} className="text-white" />,
+    3: () => <Icons.Medal3rd size={40} className="text-white" />,
   };
 
   const colors = {
@@ -126,6 +130,8 @@ function PodiumCard({
     2: 'from-gray-300 to-gray-500',
     3: 'from-orange-400 to-orange-600',
   };
+
+  const MedalComponent = MedalIcon[position as keyof typeof MedalIcon];
 
   return (
     <div
@@ -136,7 +142,9 @@ function PodiumCard({
       <div
         className={`bg-gradient-to-b ${colors[position as keyof typeof colors]} text-white rounded-t-lg px-6 py-4 ${heights[position as keyof typeof heights]} flex flex-col items-center justify-center shadow-lg`}
       >
-        <div className="text-4xl mb-2">{medals[position as keyof typeof medals]}</div>
+        <div className="mb-2">
+          <MedalComponent />
+        </div>
         <p className="font-bold text-lg text-center">{entry.username}</p>
         <p className="text-sm font-semibold">
           {entry.wpm}

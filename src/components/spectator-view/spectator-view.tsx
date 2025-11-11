@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef } from 'react';
 
 import { useRealtimeTyping } from '../../hooks/use-realtime-typing';
 import { calcAccuracy, calcWPM, formatTime } from '../../utils/metrics';
+import { Icons } from '../../utils/icons';
 import { StatCard } from '../stats-panel';
 
 type SpectatorViewProps = {
@@ -172,8 +173,9 @@ export default function SpectatorView({
     return (
       <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-600 mb-4">
-            👀 Spectator Mode
+          <h1 className="text-2xl font-bold text-gray-600 mb-4 flex items-center justify-center gap-2">
+            <Icons.Eye size={28} />
+            Spectator Mode
           </h1>
           <p className="text-gray-600 mb-4">
             Waiting for the typing session to begin...
@@ -196,8 +198,9 @@ export default function SpectatorView({
     <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
       {/* Header */}
       <header className="text-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-800 mb-2">
-          {realtimeState.sessionName || '👀 Spectator Mode'}
+        <h1 className="text-2xl font-bold text-gray-800 mb-2 flex items-center justify-center gap-2">
+          <Icons.Eye size={28} />
+          {realtimeState.sessionName || 'Spectator Mode'}
         </h1>
         <div className="flex items-center justify-center gap-4 text-sm text-gray-600">
           <div className="flex items-center gap-2">
@@ -285,8 +288,9 @@ export default function SpectatorView({
           {realtimeState.finished && (
             <div className="mt-4 text-center">
               <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                <h3 className="text-lg font-semibold text-green-800 mb-2">
-                  🎉 Session Complete!
+                <h3 className="text-lg font-semibold text-green-800 mb-2 flex items-center justify-center gap-2">
+                  <Icons.Celebrate size={24} />
+                  Session Complete!
                 </h3>
                 <p className="text-green-600">
                   The typist has finished this session.
@@ -299,22 +303,23 @@ export default function SpectatorView({
         {/* Stats Panel */}
         <div className="lg:col-span-1">
           <div className="bg-white p-4 rounded-lg border">
-            <h2 className="text-lg font-semibold mb-4 text-gray-800">
-              📊 Live Stats
+            <h2 className="text-lg font-semibold mb-4 text-gray-800 flex items-center gap-2">
+              <Icons.Stats size={24} />
+              Live Stats
             </h2>
             <div className="space-y-3">
               <StatCard
                 label="Words Per Minute"
                 value={stats.wpm}
                 unit="WPM"
-                icon="⚡"
+                icon="Lightning"
                 color="blue"
               />
               <StatCard
                 label="Accuracy"
                 value={stats.accuracy}
                 unit="%"
-                icon="🎯"
+                icon="Target"
                 color={
                   stats.accuracy >= 95
                     ? 'green'
@@ -326,13 +331,13 @@ export default function SpectatorView({
               <StatCard
                 label="Time Elapsed"
                 value={formatTime(stats.elapsedTime)}
-                icon="⏱️"
+                icon="Timer"
                 color="blue"
               />
               <StatCard
                 label="Errors Made"
                 value={stats.errorCount}
-                icon="❌"
+                icon="Close"
                 color={
                   stats.errorCount === 0
                     ? 'green'

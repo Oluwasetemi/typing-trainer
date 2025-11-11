@@ -1,6 +1,7 @@
 import { useTyping } from '../../hooks/use-typing';
 import { useTypingStats } from '../../hooks/use-typing-stats';
 import { formatTime } from '../../utils/metrics';
+import { Icons } from '../../utils/icons';
 import StatCard from './stat-card';
 
 export default function StatsPanel() {
@@ -9,8 +10,9 @@ export default function StatsPanel() {
 
   return (
     <div className="bg-white p-6 rounded-lg border">
-      <h2 className="text-xl font-semibold mb-4 text-gray-800">
-        📊 Statistics
+      <h2 className="text-xl font-semibold mb-4 text-gray-800 flex items-center gap-2">
+        <Icons.Stats size={24} />
+        Statistics
       </h2>
 
       <div className="space-y-4">
@@ -19,7 +21,7 @@ export default function StatsPanel() {
           label="Words Per Minute"
           value={stats.wpm}
           unit="WPM"
-          icon="⚡"
+          icon="Lightning"
           color="blue"
         />
 
@@ -28,7 +30,7 @@ export default function StatsPanel() {
           label="Accuracy"
           value={stats.accuracy}
           unit="%"
-          icon="🎯"
+          icon="Target"
           color={
             stats.accuracy >= 95
               ? 'green'
@@ -42,7 +44,7 @@ export default function StatsPanel() {
         <StatCard
           label="Time Elapsed"
           value={formatTime(stats.elapsedTime)}
-          icon="⏱️"
+          icon="Timer"
           color="blue"
         />
 
@@ -50,7 +52,7 @@ export default function StatsPanel() {
         <StatCard
           label="Characters Typed"
           value={`${stats.charactersTyped}/${state.sourceText.length}`}
-          icon="📝"
+          icon="FileText"
           color="blue"
         />
 
@@ -58,7 +60,7 @@ export default function StatsPanel() {
         <StatCard
           label="Errors Made"
           value={stats.errorCount}
-          icon="❌"
+          icon="Close"
           color={
             stats.errorCount === 0
               ? 'green'
@@ -72,28 +74,45 @@ export default function StatsPanel() {
       {/* Performance feedback */}
       {state.finished && (
         <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-          <h3 className="font-semibold text-gray-800 mb-2">📈 Performance</h3>
+          <h3 className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
+            <Icons.Stats size={20} />
+            Performance
+          </h3>
           <div className="text-sm text-gray-600 space-y-1">
             {stats.wpm >= 40 && (
-              <p className="text-green-600">🚀 Excellent typing speed!</p>
+              <p className="text-green-600 flex items-center gap-2">
+                <Icons.Rocket size={16} />
+                Excellent typing speed!
+              </p>
             )}
             {stats.wpm >= 20 && stats.wpm < 40 && (
-              <p className="text-blue-600">👍 Good typing speed!</p>
+              <p className="text-blue-600 flex items-center gap-2">
+                <Icons.ThumbUp size={16} />
+                Good typing speed!
+              </p>
             )}
             {stats.wpm < 20 && (
-              <p className="text-yellow-600">
-                💪 Keep practicing to improve speed!
+              <p className="text-yellow-600 flex items-center gap-2">
+                <Icons.Muscle size={16} />
+                Keep practicing to improve speed!
               </p>
             )}
             {stats.accuracy >= 95 && (
-              <p className="text-green-600">🎯 Outstanding accuracy!</p>
+              <p className="text-green-600 flex items-center gap-2">
+                <Icons.Target size={16} />
+                Outstanding accuracy!
+              </p>
             )}
             {stats.accuracy >= 85 && stats.accuracy < 95 && (
-              <p className="text-blue-600">👌 Good accuracy!</p>
+              <p className="text-blue-600 flex items-center gap-2">
+                <Icons.ThumbUp size={16} />
+                Good accuracy!
+              </p>
             )}
             {stats.accuracy < 85 && (
-              <p className="text-yellow-600">
-                🎲 Focus on accuracy over speed!
+              <p className="text-yellow-600 flex items-center gap-2">
+                <Icons.Dice size={16} />
+                Focus on accuracy over speed!
               </p>
             )}
           </div>

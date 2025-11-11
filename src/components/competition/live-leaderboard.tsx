@@ -1,6 +1,7 @@
 import type { LeaderboardEntry } from '../../types/competition.types';
 
 import { formatTime } from '../../utils/metrics';
+import { Icons } from '../../utils/icons';
 
 type LiveLeaderboardProps = {
   leaderboard: LeaderboardEntry[];
@@ -14,8 +15,9 @@ export default function LiveLeaderboard({
   return (
     <div className="bg-white rounded-lg shadow-lg p-4 h-full">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-bold text-gray-800">
-          🏆 Leaderboard
+        <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+          <Icons.Trophy size={24} />
+          Leaderboard
         </h2>
         {isCompetitionActive && (
           <span className="px-2 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded-full animate-pulse">
@@ -42,14 +44,14 @@ export default function LiveLeaderboard({
 }
 
 function LeaderboardCard({ entry }: { entry: LeaderboardEntry }) {
-  const getMedalEmoji = (rank: number) => {
+  const getMedalIcon = (rank: number) => {
     switch (rank) {
       case 1:
-        return '🥇';
+        return <Icons.Medal1st size={20} className="text-yellow-500" />;
       case 2:
-        return '🥈';
+        return <Icons.Medal2nd size={20} className="text-gray-400" />;
       case 3:
-        return '🥉';
+        return <Icons.Medal3rd size={20} className="text-orange-500" />;
       default:
         return `#${rank}`;
     }
@@ -78,7 +80,7 @@ function LeaderboardCard({ entry }: { entry: LeaderboardEntry }) {
     >
       {/* Rank Badge */}
       <div className="absolute -top-2 -left-2 w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 text-white font-bold flex items-center justify-center text-sm shadow-lg">
-        {getMedalEmoji(entry.rank)}
+        {getMedalIcon(entry.rank)}
       </div>
 
       <div className="ml-6">
@@ -109,8 +111,9 @@ function LeaderboardCard({ entry }: { entry: LeaderboardEntry }) {
           {entry.finished
             ? (
                 <div className="text-right">
-                  <span className="px-2 py-1 bg-green-500 text-white text-xs font-bold rounded">
-                    ✓ Finished
+                  <span className="px-2 py-1 bg-green-500 text-white text-xs font-bold rounded flex items-center gap-1">
+                    <Icons.Check size={12} />
+                    Finished
                   </span>
                   {entry.finishTime && (
                     <p className="text-xs text-gray-500 mt-1">

@@ -1,8 +1,10 @@
+import { Icons } from '../../utils/icons';
+
 type StatCardProps = {
   label: string;
   value: string | number;
   unit?: string;
-  icon: string;
+  icon: keyof typeof Icons;
   color?: 'blue' | 'green' | 'red' | 'yellow';
 };
 
@@ -20,12 +22,14 @@ export default function StatCard({
     yellow: 'bg-yellow-50 text-yellow-800 border-yellow-200',
   };
 
+  const IconComponent = Icons[icon];
+
   return (
     <div
       className={`p-4 rounded-lg border ${colorClasses[color]} transition-colors`}
     >
       <div className="flex items-center gap-2 mb-1">
-        <span className="text-lg">{icon}</span>
+        <IconComponent className="flex-shrink-0" size={20} />
         <span className="text-sm font-medium text-gray-600">{label}</span>
       </div>
       <div className="flex items-baseline gap-1">
