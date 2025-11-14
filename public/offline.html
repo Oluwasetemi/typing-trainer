@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Offline - Typing Trainer</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+
+      .container {
+        background: white;
+        border-radius: 16px;
+        padding: 40px;
+        max-width: 500px;
+        width: 100%;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        text-align: center;
+      }
+
+      .icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 24px;
+        background: #FEF3C7;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .icon svg {
+        width: 40px;
+        height: 40px;
+        color: #F59E0B;
+      }
+
+      h1 {
+        font-size: 28px;
+        color: #1F2937;
+        margin-bottom: 12px;
+        font-weight: 700;
+      }
+
+      p {
+        color: #6B7280;
+        line-height: 1.6;
+        margin-bottom: 16px;
+        font-size: 16px;
+      }
+
+      .features {
+        background: #F9FAFB;
+        border-radius: 12px;
+        padding: 20px;
+        margin: 24px 0;
+        text-align: left;
+      }
+
+      .feature {
+        display: flex;
+        align-items: start;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
+      .feature:last-child {
+        margin-bottom: 0;
+      }
+
+      .feature svg {
+        width: 20px;
+        height: 20px;
+        color: #10B981;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+
+      .feature-offline svg {
+        color: #EF4444;
+      }
+
+      .feature-text {
+        font-size: 14px;
+        color: #374151;
+      }
+
+      .button {
+        display: inline-block;
+        background: #8B5CF6;
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 16px;
+        transition: background 0.2s;
+        cursor: pointer;
+        border: none;
+      }
+
+      .button:hover {
+        background: #7C3AED;
+      }
+
+      .retry-info {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid #E5E7EB;
+        font-size: 14px;
+        color: #9CA3AF;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="icon">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 2.829a4.978 4.978 0 01-1.414-2.83m-1.414 5.658a9 9 0 01-2.167-9.238m7.824 2.167a1 1 0 111.414 1.414m-1.414-1.414L3 3m8.293 8.293l1.414 1.414"
+          />
+        </svg>
+      </div>
+
+      <h1>You're Offline</h1>
+      <p>
+        It looks like you've lost your internet connection. Don't worry, some features still work!
+      </p>
+
+      <div class="features">
+        <div class="feature">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+          <div class="feature-text">
+            <strong>Solo Practice</strong> - Practice typing with cached texts
+          </div>
+        </div>
+
+        <div class="feature feature-offline">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          <div class="feature-text">
+            <strong>Competition Mode</strong> - Requires internet connection
+          </div>
+        </div>
+
+        <div class="feature feature-offline">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          <div class="feature-text">
+            <strong>Spectator Mode</strong> - Requires internet connection
+          </div>
+        </div>
+
+        <div class="feature feature-offline">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          <div class="feature-text">
+            <strong>Real-time Sessions</strong> - Requires internet connection
+          </div>
+        </div>
+      </div>
+
+      <button class="button" onclick="window.location.href='/solo'">
+        Go to Solo Practice
+      </button>
+
+      <div class="retry-info">
+        The page will automatically reload when your connection is restored
+      </div>
+    </div>
+
+    <script>
+      // Auto-reload when connection is restored
+      window.addEventListener('online', () => {
+        window.location.reload();
+      });
+
+      // Check connection status periodically
+      setInterval(() => {
+        if (navigator.onLine) {
+          window.location.reload();
+        }
+      }, 5000);
+    </script>
+  </body>
+</html>

@@ -14,7 +14,7 @@
 
     /* Nitro-specific optimizations */
     "resolveJsonModule": true,
-    "types": ["vite/client", "node", "vitest", "./.nitro/types/nitro"],
+    "types": ["vite/client", "vite-plugin-pwa/client", "node", "vitest", "./.nitro/types/nitro"],
     "allowImportingTsExtensions": true,
     "strict": true,
     "noFallthroughCasesInSwitch": true,

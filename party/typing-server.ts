@@ -67,14 +67,13 @@ export default class TypingServer implements Party.Server {
       );
 
       // Notify spectators that a typist has joined
-      this.broadcast(
+      this.room.broadcast(JSON.stringify(
         {
           type: 'SESSION_START',
           data: { typistId: userId },
           timestamp: Date.now(),
         },
-        connection,
-      );
+      ));
     }
     else if (role === 'spectator') {
       // Spectator connection
@@ -91,14 +90,13 @@ export default class TypingServer implements Party.Server {
       );
 
       // Notify others about spectator count update
-      this.broadcast(
+      this.room.broadcast(JSON.stringify(
         {
           type: 'SPECTATOR_JOIN',
           data: { spectatorCount: this.sessionState.spectatorCount },
           timestamp: Date.now(),
         },
-        connection,
-      );
+      ));
     }
     else {
       // Reject additional typists
@@ -117,20 +115,17 @@ export default class TypingServer implements Party.Server {
     try {
       const event: TypingEvent = JSON.parse(message);
 
-      // Only process messages from the active typist
       if (sender !== this.typistConnection) {
         return;
       }
 
       switch (event.type) {
         case 'TYPING_UPDATE':
-          // Update session state with typing progress
           this.sessionState = {
             ...this.sessionState,
             ...event.data,
           };
 
-          // Broadcast typing update to all spectators
           this.broadcastToSpectators({
             type: 'TYPING_UPDATE',
             data: this.sessionState,
@@ -142,12 +137,11 @@ export default class TypingServer implements Party.Server {
           this.sessionState.finished = true;
           this.sessionState.isActive = false;
 
-          // Broadcast session end to all spectators
-          this.broadcastToSpectators({
+          this.room.broadcast(JSON.stringify({
             type: 'SESSION_END',
             data: this.sessionState,
             timestamp: Date.now(),
-          });
+          }));
           break;
       }
     }
@@ -158,29 +152,25 @@ export default class TypingServer implements Party.Server {
 
   async onClose(connection: Party.Connection) {
     if (connection === this.typistConnection) {
-      // Typist disconnected
       this.typistConnection = null;
       this.sessionState.isActive = false;
       this.sessionState.typistId = null;
 
-      // Notify spectators
-      this.broadcast({
+      this.broadcastToSpectators({
         type: 'SESSION_END',
         data: { reason: 'Typist disconnected' },
         timestamp: Date.now(),
       });
     }
     else if (this.spectators.has(connection)) {
-      // Spectator disconnected
       this.spectators.delete(connection);
       this.sessionState.spectatorCount = this.spectators.size;
 
-      // Notify remaining connections
-      this.broadcast({
+      this.room.broadcast(JSON.stringify({
         type: 'SPECTATOR_LEAVE',
         data: { spectatorCount: this.sessionState.spectatorCount },
         timestamp: Date.now(),
-      });
+      }));
     }
   }
 
@@ -194,7 +184,6 @@ export default class TypingServer implements Party.Server {
     }
 
     if (request.method === 'POST') {
-      // Initialize a new session
       const sessionData = await request.json();
       this.sessionState = {
         ...this.sessionState,
@@ -213,22 +202,6 @@ export default class TypingServer implements Party.Server {
     }
 
     return new Response('Method not allowed', { status: 405 });
-  }
-
-  private broadcast(event: TypingEvent, exclude?: Party.Connection) {
-    const message = JSON.stringify(event);
-
-    // Send to typist
-    if (this.typistConnection && this.typistConnection !== exclude) {
-      this.typistConnection.send(message);
-    }
-
-    // Send to all spectators
-    this.spectators.forEach((spectator) => {
-      if (spectator !== exclude) {
-        spectator.send(message);
-      }
-    });
   }
 
   private broadcastToSpectators(event: TypingEvent) {

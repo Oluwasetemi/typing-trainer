@@ -24,7 +24,8 @@ export default class CompetitionServer implements Party.Server {
       if (stored) {
         this.session = stored;
       }
-    } catch (error) {
+    }
+    catch (error) {
       console.error('[CompetitionServer] Error loading session from storage:', error);
     }
   }
@@ -74,28 +75,19 @@ export default class CompetitionServer implements Party.Server {
   }
 
   async onClose(connection: Party.Connection) {
-    // Don't immediately mark participant as disconnected and persist it
-    // This prevents temporary disconnections (like page refresh) from being persisted
-    // The participant will be properly handled when they reconnect via JOIN_COMPETITION
-
     if (this.session) {
       const participant = Object.values(this.session.participants).find(
         p => p.connectionId === connection.id,
       );
 
       if (participant) {
-        // Mark as disconnected in memory but don't persist yet
-        // This allows the UI to show disconnected status temporarily
         participant.isConnected = false;
 
-        // Clear any existing timeout for this participant
         const existingTimeout = this.disconnectTimeouts.get(participant.userId);
         if (existingTimeout) {
           clearTimeout(existingTimeout);
         }
 
-        // Set a timeout to persist the disconnected state after 30 seconds
-        // This gives time for page refreshes to reconnect
         const timeout = setTimeout(async () => {
           if (this.session && this.session.participants[participant.userId] && !this.session.participants[participant.userId].isConnected) {
             await this.persistSession();
@@ -105,11 +97,10 @@ export default class CompetitionServer implements Party.Server {
 
         this.disconnectTimeouts.set(participant.userId, timeout);
 
-        // Broadcast the disconnection to other participants (exclude the disconnected participant)
-        this.broadcast({
+        this.room.broadcast(JSON.stringify({
           type: 'PARTICIPANT_LEFT',
           userId: participant.userId,
-        }, [connection.id]); // Exclude the disconnected connection
+        }));
       }
     }
   }
@@ -134,16 +125,12 @@ export default class CompetitionServer implements Party.Server {
       };
     }
 
-    // Check if this user is already a participant (e.g., after page refresh)
     const existingParticipant = this.session.participants[msg.userId];
 
     if (existingParticipant) {
-      // If the existing participant is disconnected, this is definitely a reconnection
-      // If they're connected with a different connectionId, check if it's a stale connection
       const isReconnection = !existingParticipant.isConnected || existingParticipant.connectionId === sender.id;
 
       if (!isReconnection) {
-        // Security check: Someone is trying to use a userId that's actively connected
         this.sendToConnection(sender, {
           type: 'ERROR',
           message: 'This user is already in the competition. Please use a different identity.',
@@ -151,34 +138,26 @@ export default class CompetitionServer implements Party.Server {
         return;
       }
 
-      // Clear any pending disconnect timeout since they're reconnecting
       const existingTimeout = this.disconnectTimeouts.get(msg.userId);
       if (existingTimeout) {
         clearTimeout(existingTimeout);
         this.disconnectTimeouts.delete(msg.userId);
       }
 
-      // Update their connection ID and mark as connected (in case they reconnected)
       existingParticipant.connectionId = sender.id;
       existingParticipant.isConnected = true;
-      // IMPORTANT: We preserve their existing role and state:
-      // - isHost: remains the same (host stays host)
-      // - isReady: remains the same (ready status preserved)
-      // - stats: remains the same (WPM, progress, etc. preserved)
-      // - joinedAt: remains the same (original join time)
+
       await this.persistSession();
 
-      // Send them the current state with updated connection status
       this.sendToConnection(sender, {
         type: 'COMPETITION_STATE',
         session: this.session,
       });
 
-      // Broadcast to all that this participant reconnected
-      this.broadcast({
+      this.room.broadcast(JSON.stringify({
         type: 'PARTICIPANT_JOINED',
         participant: existingParticipant,
-      });
+      }));
       return;
     }
 
@@ -228,10 +207,10 @@ export default class CompetitionServer implements Party.Server {
 
     // Broadcast to ALL participants (including the sender) that someone joined
     // This ensures everyone sees the updated participant list
-    this.broadcast({
+    this.room.broadcast(JSON.stringify({
       type: 'PARTICIPANT_JOINED',
       participant,
-    });
+    }));
   }
 
   private async handleReadyUp(
@@ -251,11 +230,11 @@ export default class CompetitionServer implements Party.Server {
     participant.isReady = msg.isReady;
     await this.persistSession();
 
-    this.broadcast({
+    this.room.broadcast(JSON.stringify({
       type: 'PARTICIPANT_READY',
       userId: participant.userId,
       isReady: msg.isReady,
-    });
+    }));
   }
 
   private async handleStartCompetition(sender: Party.Connection) {
@@ -287,10 +266,10 @@ export default class CompetitionServer implements Party.Server {
     this.session.countdownStartTime = Date.now();
     await this.persistSession();
 
-    this.broadcast({
+    this.room.broadcast(JSON.stringify({
       type: 'COUNTDOWN_START',
       countdownStartTime: this.session.countdownStartTime,
-    });
+    }));
 
     setTimeout(async () => {
       if (this.session && this.session.state === 'countdown') {
@@ -298,10 +277,10 @@ export default class CompetitionServer implements Party.Server {
         this.session.startTime = Date.now();
         await this.persistSession();
 
-        this.broadcast({
+        this.room.broadcast(JSON.stringify({
           type: 'COMPETITION_START',
           startTime: this.session.startTime,
-        });
+        }));
       }
     }, COUNTDOWN_DURATION);
   }
@@ -338,10 +317,10 @@ export default class CompetitionServer implements Party.Server {
     await this.persistSession();
 
     const leaderboard = this.calculateLeaderboard();
-    this.broadcast({
+    this.room.broadcast(JSON.stringify({
       type: 'LEADERBOARD_UPDATE',
       leaderboard,
-    });
+    }));
   }
 
   private async handleFinishTyping(
@@ -376,18 +355,18 @@ export default class CompetitionServer implements Party.Server {
       await this.persistSession();
 
       const finalLeaderboard = this.calculateLeaderboard();
-      this.broadcast({
+      this.room.broadcast(JSON.stringify({
         type: 'COMPETITION_END',
         finalLeaderboard,
-      });
+      }));
     }
     else {
       // Just update leaderboard
       const leaderboard = this.calculateLeaderboard();
-      this.broadcast({
+      this.room.broadcast(JSON.stringify({
         type: 'LEADERBOARD_UPDATE',
         leaderboard,
-      });
+      }));
     }
   }
 
@@ -405,10 +384,10 @@ export default class CompetitionServer implements Party.Server {
     delete this.session.participants[participant.userId];
     await this.persistSession();
 
-    this.broadcast({
+    this.room.broadcast(JSON.stringify({
       type: 'PARTICIPANT_LEFT',
       userId: participant.userId,
-    });
+    }));
 
     if (Object.keys(this.session.participants).length === 0) {
       this.session = null;
@@ -459,20 +438,9 @@ export default class CompetitionServer implements Party.Server {
     if (this.session) {
       try {
         await this.room.storage.put('session', this.session);
-      } catch (error) {
-        console.error('[CompetitionServer] Error persisting session:', error);
       }
-    }
-  }
-
-  private broadcast(
-    message: CompetitionServerMessage,
-    exclude: string[] = [],
-  ) {
-    const serialized = JSON.stringify(message);
-    for (const connection of this.room.getConnections()) {
-      if (!exclude.includes(connection.id)) {
-        connection.send(serialized);
+      catch (error) {
+        console.error('[CompetitionServer] Error persisting session:', error);
       }
     }
   }

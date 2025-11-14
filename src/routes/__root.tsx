@@ -2,6 +2,8 @@ import { TanstackDevtools } from '@tanstack/react-devtools';
 import { createRootRoute, HeadContent, Outlet } from '@tanstack/react-router';
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 
+import OfflineIndicator from '../components/common/offline-indicator';
+import UpdatePrompt from '../components/common/update-prompt';
 import Header from '../components/header';
 import { generateDefaultOGImageUrl } from '../utils/og-image';
 
@@ -12,11 +14,13 @@ export const Route = createRootRoute({
     meta: [
       {
         name: 'description',
-        content: 'Practice typing with real-time collaboration. Create sessions, join as spectator, or practice solo.',
+        content:
+          'Practice typing with real-time collaboration. Create sessions, join as spectator, or practice solo.',
       },
       {
         name: 'keywords',
-        content: 'typing, practice, real-time, collaboration, typing trainer, wpm, accuracy',
+        content:
+          'typing, practice, real-time, collaboration, typing trainer, wpm, accuracy',
       },
       {
         property: 'og:title',
@@ -24,7 +28,8 @@ export const Route = createRootRoute({
       },
       {
         property: 'og:description',
-        content: 'Practice typing with real-time collaboration. Create sessions, join as spectator, or practice solo.',
+        content:
+          'Practice typing with real-time collaboration. Create sessions, join as spectator, or practice solo.',
       },
       {
         property: 'og:type',
@@ -32,7 +37,8 @@ export const Route = createRootRoute({
       },
       {
         property: 'og:url',
-        content: 'https://deploy-preview-3--realtime-typing-trainer.netlify.app',
+        content:
+          'https://deploy-preview-3--realtime-typing-trainer.netlify.app',
       },
       {
         property: 'og:image',
@@ -40,7 +46,8 @@ export const Route = createRootRoute({
       },
       {
         property: 'og:logo',
-        content: 'https://deploy-preview-3--realtime-typing-trainer.netlify.app/favicon.ico',
+        content:
+          'https://deploy-preview-3--realtime-typing-trainer.netlify.app/favicon.ico',
       },
       {
         name: 'twitter:card',
@@ -52,7 +59,8 @@ export const Route = createRootRoute({
       },
       {
         name: 'twitter:description',
-        content: 'Practice typing with real-time collaboration. Create sessions, join as spectator, or practice solo.',
+        content:
+          'Practice typing with real-time collaboration. Create sessions, join as spectator, or practice solo.',
       },
       {
         name: 'twitter:image',
@@ -73,10 +81,12 @@ export const Route = createRootRoute({
   component: () => (
     <div className="min-h-screen bg-gray-50">
       <HeadContent />
+      <OfflineIndicator />
       <Header />
       <main className="flex items-center justify-center p-4">
         <Outlet />
       </main>
+      <UpdatePrompt />
       {import.meta.env.DEV && (
         <TanstackDevtools
           config={{

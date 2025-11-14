@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <rect width="512" height="512" fill="#8b5cf6"/>
+  <rect x="64" y="64" width="384" height="384" rx="32" fill="#ffffff"/>
+  <g fill="#8b5cf6">
+    <!-- Letter T -->
+    <rect x="140" y="160" width="232" height="40" rx="8"/>
+    <rect x="236" y="160" width="40" height="192" rx="8"/>
+
+    <!-- Typing cursor effect -->
+    <rect x="288" y="280" width="8" height="48" rx="4" fill="#7c3aed">
+      <animate attributeName="opacity" values="1;0;1" dur="1s" repeatCount="indefinite"/>
+    </rect>
+  </g>
+</svg>
