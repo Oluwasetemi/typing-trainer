@@ -294,7 +294,7 @@ Manages session creation and joining.
 
 #### Metrics Calculation
 
-```ts
+```
 // Calculate Words Per Minute
 calcWPM(charsTyped: number, elapsedMs: number): number;
 

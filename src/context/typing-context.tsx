@@ -112,7 +112,6 @@ function typingReducer(state: TypingState, action: TypingAction): TypingState {
       // Update typed words array
       const newTypedWords = [...state.typedWords];
       const currentTypedWordIndex = newTypedWords.length - 1;
-      const currentWord = newTypedWords[currentTypedWordIndex];
 
       // Check if we're finishing a word (at the last character)
       const finishingWord = isFinished;

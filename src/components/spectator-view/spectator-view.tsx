@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useMemo } from 'react';
 
 import { TypingContext } from '../../context/typing-context';
 import { useRealtimeTyping } from '../../hooks/use-realtime-typing';
@@ -36,7 +36,7 @@ function SpectatorTypingProvider({ realtimeState, children }: { realtimeState: a
     dispatch: mockDispatch,
   }), [mockState]);
 
-  return <TypingContext.Provider value={value}>{children}</TypingContext.Provider>;
+  return <TypingContext value={value}>{children}</TypingContext>;
 }
 
 // Component to display text using TextDisplay with realtime state
@@ -84,7 +84,6 @@ function SpectatorViewContent({
   isConnected,
   connectionError,
 }: SpectatorViewContentProps) {
-
   // Calculate stats directly from realtime state (no context dependency)
   const stats = useMemo(
     function calculateStats() {
@@ -114,7 +113,6 @@ function SpectatorViewContent({
     },
     [realtimeState],
   );
-
 
   if (connectionError) {
     return (
@@ -348,17 +346,20 @@ function SpectatorViewContent({
                 </svg>
               </div>
               <span className="text-sm font-semibold text-red-800">
-                Display Errors ({realtimeState.errors.size})
+                Display Errors (
+                {realtimeState.errors.size}
+                )
               </span>
             </summary>
             <div className="mt-3 ml-8">
               <div className="text-sm bg-white rounded px-3 py-2 border border-red-100 flex items-center gap-2 flex-wrap">
-                {Array.from(realtimeState.errors).map((wordIndex) => {
+                {Array.from(realtimeState.errors as unknown as number[]).map((wordIndex) => {
                   const sourceWords = realtimeState.sourceText.split(' ');
                   const expectedWord = sourceWords[wordIndex] || '';
                   const typedWord = realtimeState.typedWords[wordIndex] || '';
 
-                  if (!typedWord) return null;
+                  if (!typedWord)
+                    return null;
 
                   return (
                     <span
@@ -366,7 +367,9 @@ function SpectatorViewContent({
                       className="inline-flex items-center gap-2"
                     >
                       <span className="text-gray-600 font-medium">
-                        Word{wordIndex + 1}:
+                        Word
+                        {wordIndex + 1}
+                        :
                       </span>
                       <span className="line-through text-red-600 font-mono bg-red-100 px-2 py-0.5 rounded">
                         {typedWord}

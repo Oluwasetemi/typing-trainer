@@ -48,7 +48,9 @@ export default function ErrorFeedback() {
           </svg>
         </div>
         <span className="text-sm font-semibold text-red-800">
-          Display Errors ({errorDetails.length})
+          Display Errors (
+          {errorDetails.length}
+          )
         </span>
       </summary>
       <div className="mt-3 ml-8">
@@ -59,7 +61,9 @@ export default function ErrorFeedback() {
               className="inline-flex items-center gap-2"
             >
               <span className="text-gray-600 font-medium">
-                Word{wordIndex + 1}:
+                Word
+                {wordIndex + 1}
+                :
               </span>
               <span className="line-through text-red-600 font-mono bg-red-100 px-2 py-0.5 rounded">
                 {typedWord}

@@ -176,7 +176,8 @@ export default function KeyboardDisplay({
   const currentLayout = keyboardLayouts[layout];
 
   const activeKey = useMemo(() => {
-    if (!currentChar) return null;
+    if (!currentChar)
+      return null;
     const upperChar = currentChar.toUpperCase();
     return upperChar in currentLayout ? upperChar : null;
   }, [currentChar, currentLayout]);
