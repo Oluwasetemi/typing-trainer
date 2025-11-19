@@ -5,6 +5,7 @@ import type { CompetitionSession } from '../../types/competition.types';
 import { TypingProvider } from '../../context/typing-context';
 import { useTyping } from '../../hooks/use-typing';
 import { calcAccuracy, calcWPM } from '../../utils/metrics';
+import ErrorFeedback from '../error-feedback/error-feedback';
 import ProgressBar from '../progress-bar/progress-bar';
 import StatsPanel from '../stats-panel/stats-panel';
 import TextDisplay from '../text-display/text-display';
@@ -111,6 +112,9 @@ function CompetitionTypingContent({
             <div className="bg-white rounded-lg shadow p-4">
               <ProgressBar />
             </div>
+
+            {/* Error Feedback */}
+            <ErrorFeedback />
 
             {/* Typing Area */}
             <main className="bg-white rounded-lg shadow p-6">

@@ -11,7 +11,6 @@
       "@/*": ["./src/*"]
     },
 
-    /* Nitro-specific optimizations */
     "resolveJsonModule": true,
     "types": ["vite/client", "vite-plugin-pwa/client", "node", "vitest"],
     "allowImportingTsExtensions": true,
@@ -33,9 +32,7 @@
     "**/*.tsx",
     "eslint.config.js",
     "prettier.config.js",
-    "vite.config.js",
-    "nitro.config.ts",
-    "api/**/*.ts"
+    "vite.config.js"
   ],
   "exclude": ["node_modules", ".output", "dist"]
 }

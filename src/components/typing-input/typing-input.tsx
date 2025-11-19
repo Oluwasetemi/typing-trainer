@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { useTyping } from '../../hooks/use-typing';
 import ConfirmModal from '../common/confirm-modal';
+import KeyboardDisplay from '../keyboard-display/keyboard-display';
 
 export default function TypingInput() {
   const { state, dispatch } = useTyping();
@@ -130,16 +131,22 @@ export default function TypingInput() {
         {!state.startTime && !state.finished && (
           <div className="text-center text-gray-500 py-8">
             <p className="text-lg mb-2">👆 Click here and start typing!</p>
-            <p className="text-sm">
+            <p className="text-sm mb-6">
               The text above will be highlighted as you type.
             </p>
+            <KeyboardDisplay
+              currentChar={state.sourceText[state.currentIndex] || ''}
+            />
           </div>
         )}
 
         {state.startTime && !state.finished && (
           <div className="text-center text-gray-600 py-8">
             <p className="text-lg mb-2">⌨️ Keep typing...</p>
-            <p className="text-sm">Your progress is being tracked above.</p>
+            <p className="text-sm mb-6">Your progress is being tracked above.</p>
+            <KeyboardDisplay
+              currentChar={state.sourceText[state.currentIndex] || ''}
+            />
           </div>
         )}
 

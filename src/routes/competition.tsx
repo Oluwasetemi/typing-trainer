@@ -124,7 +124,7 @@ function CompetitionRoute() {
   // Show session manager if no competition ID
   if (!competitionId || !username) {
     return (
-      <>
+      <div className="mx-auto" style={{ maxWidth: '900px' }}>
         <CompetitionSessionManager
           onCreateCompetition={handleCreateCompetition}
           onJoinCompetition={handleJoinCompetition}
@@ -136,13 +136,13 @@ function CompetitionRoute() {
           type={notification.type}
           onClose={hideNotification}
         />
-      </>
+      </div>
     );
   }
 
   // Show competition view
   return (
-    <>
+    <div className="mx-auto" style={{ maxWidth: '900px' }}>
       <Competition
         competitionId={competitionId}
         userId={userId}
@@ -156,6 +156,6 @@ function CompetitionRoute() {
         type={notification.type}
         onClose={hideNotification}
       />
-    </>
+    </div>
   );
 }

@@ -95,8 +95,8 @@ export default function TextDisplay() {
         const globalIndex = wordStartIndex + charPos;
         let charClassName = '';
 
-        // Highlight current character with cursor
-        if (globalIndex === currentIndex) {
+        // Highlight all characters in the current word with cursor
+        if (wordIndex === currentWordIndex && !finished) {
           charClassName = 'border-b-4 border-blue-600 animate-pulse';
         }
 

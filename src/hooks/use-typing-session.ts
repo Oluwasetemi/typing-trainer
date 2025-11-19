@@ -78,11 +78,12 @@ export function useTypingSession() {
   const getSessionUrl = useCallback(
     (sessionId: string, role: 'typist' | 'spectator' = 'spectator') => {
       const baseUrl = window.location.origin;
-      const params = new URLSearchParams({
-        session: sessionId,
-        role,
-      });
-      return `${baseUrl}?${params.toString()}`;
+      if (role === 'spectator') {
+        return `${baseUrl}/spectator?sessionId=${sessionId}`;
+      }
+      else {
+        return `${baseUrl}/session?sessionId=${sessionId}`;
+      }
     },
     [],
   );

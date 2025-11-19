@@ -32,11 +32,11 @@ export default function ErrorFeedback() {
   }
 
   return (
-    <div className="w-full bg-red-50 border-2 border-red-200 rounded-lg p-4">
-      <div className="flex items-start gap-3">
+    <details className="w-full bg-red-50 border-2 border-red-200 rounded-lg p-4">
+      <summary className="flex items-center gap-3 cursor-pointer list-none">
         <div className="flex-shrink-0">
           <svg
-            className="w-5 h-5 text-red-600 mt-0.5"
+            className="w-5 h-5 text-red-600"
             fill="currentColor"
             viewBox="0 0 20 20"
           >
@@ -47,39 +47,31 @@ export default function ErrorFeedback() {
             />
           </svg>
         </div>
-        <div className="flex-1">
-          <h3 className="text-sm font-semibold text-red-800 mb-2">
-            {errorDetails.length}
-            {' '}
-            {errorDetails.length === 1 ? 'Error' : 'Errors'}
-            {' '}
-            Detected
-          </h3>
-          <div className="space-y-2">
-            {errorDetails.map(({ wordIndex, expectedWord, typedWord }) => (
-              <div
-                key={wordIndex}
-                className="text-sm bg-white rounded px-3 py-2 border border-red-100"
-              >
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-gray-600 font-medium">
-                    Word
-                    {wordIndex + 1}
-                    :
-                  </span>
-                  <span className="line-through text-red-600 font-mono bg-red-100 px-2 py-0.5 rounded">
-                    {typedWord}
-                  </span>
-                  <span className="text-gray-400">→</span>
-                  <span className="text-green-700 font-mono bg-green-100 px-2 py-0.5 rounded">
-                    {expectedWord}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
+        <span className="text-sm font-semibold text-red-800">
+          Display Errors ({errorDetails.length})
+        </span>
+      </summary>
+      <div className="mt-3 ml-8">
+        <div className="text-sm bg-white rounded px-3 py-2 border border-red-100 flex items-center gap-2 flex-wrap">
+          {errorDetails.map(({ wordIndex, expectedWord, typedWord }) => (
+            <span
+              key={wordIndex}
+              className="inline-flex items-center gap-2"
+            >
+              <span className="text-gray-600 font-medium">
+                Word{wordIndex + 1}:
+              </span>
+              <span className="line-through text-red-600 font-mono bg-red-100 px-2 py-0.5 rounded">
+                {typedWord}
+              </span>
+              <span className="text-gray-400">→</span>
+              <span className="text-green-700 font-mono bg-green-100 px-2 py-0.5 rounded">
+                {expectedWord}
+              </span>
+            </span>
+          ))}
         </div>
       </div>
-    </div>
+    </details>
   );
 }

@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 
+import ErrorFeedback from '@/components/error-feedback/error-feedback';
 import { ProgressBar } from '@/components/progress-bar';
 import { StatsPanel } from '@/components/stats-panel';
 import { TextDisplay } from '@/components/text-display';
@@ -168,6 +169,11 @@ function RealtimeTypingTrainerContent({
       {/* Progress Bar */}
       <div className="mb-6">
         <ProgressBar />
+      </div>
+
+      {/* Error Feedback */}
+      <div className="mb-6">
+        <ErrorFeedback />
       </div>
 
       {/* Main Content */}

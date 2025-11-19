@@ -147,6 +147,4 @@ dev-dist
 .partykit
 .claude
 .playwright-mcp
-.output
-.nitro
 .vercel

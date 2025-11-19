@@ -48,46 +48,81 @@ function typingReducer(state: TypingState, action: TypingAction): TypingState {
       if (state.finished)
         return state;
 
+      // Split source text into words
+      const sourceWords = state.sourceText.split(' ');
+
+      // Handle space key - skip to next word
+      if (action.char === ' ') {
+        // Calculate the next word's starting position
+        let nextWordStartIndex = 0;
+        for (let i = 0; i <= state.currentWordIndex; i++) {
+          if (i < state.currentWordIndex) {
+            nextWordStartIndex += sourceWords[i].length + 1; // +1 for space
+          }
+          else if (i === state.currentWordIndex) {
+            nextWordStartIndex += sourceWords[i].length + 1; // Skip current word and space
+          }
+        }
+
+        // Update typed words array
+        const newTypedWords = [...state.typedWords];
+        const currentTypedWordIndex = newTypedWords.length - 1;
+        const currentWord = newTypedWords[currentTypedWordIndex];
+
+        // Only advance if current word has content
+        if (currentWord.length > 0) {
+          newTypedWords.push(''); // Start new empty word
+
+          // Validate the word we're leaving
+          const expectedWord = sourceWords[state.currentWordIndex] || '';
+          const newErrors = new Set(state.errors);
+
+          if (currentWord !== expectedWord) {
+            newErrors.add(state.currentWordIndex);
+          }
+          else {
+            newErrors.delete(state.currentWordIndex);
+          }
+
+          const newWordIndex = state.currentWordIndex + 1;
+          const isFinished = newWordIndex >= sourceWords.length;
+
+          return {
+            ...state,
+            currentIndex: nextWordStartIndex,
+            currentWordIndex: newWordIndex,
+            errors: newErrors,
+            typedText: state.sourceText.slice(0, nextWordStartIndex),
+            typedWords: newTypedWords,
+            finished: isFinished,
+            startTime: state.startTime || Date.now(),
+            endTime: isFinished ? Date.now() : null,
+          };
+        }
+
+        // If current word is empty, ignore the space
+        return state;
+      }
+
+      // Regular character typing
       const newTypedText = state.typedText + action.char;
       const newIndex = state.currentIndex + 1;
       const isFinished = newIndex >= state.sourceText.length;
-
-      // Split source text into words
-      const sourceWords = state.sourceText.split(' ');
 
       // Update typed words array
       const newTypedWords = [...state.typedWords];
       const currentTypedWordIndex = newTypedWords.length - 1;
       const currentWord = newTypedWords[currentTypedWordIndex];
 
-      // Check if we're finishing a word (before updating the array)
-      // Only finish if current word has content
-      const finishingWord = (action.char === ' ' && currentWord.length > 0) || isFinished;
+      // Check if we're finishing a word (at the last character)
+      const finishingWord = isFinished;
       const wordIndexToValidate = currentTypedWordIndex;
 
-      if (action.char === ' ') {
-        // Only move to next word if current word has content
-        // This prevents multiple spaces from creating multiple empty words
-        if (currentWord.length > 0) {
-          newTypedWords.push(''); // Start new empty word
-        }
-        // If current word is empty, just ignore the space (don't add it)
-      }
-      else {
-        // Add character to current word
-        newTypedWords[currentTypedWordIndex] += action.char;
-      }
+      // Add character to current word
+      newTypedWords[currentTypedWordIndex] += action.char;
 
       // Calculate which source word we're on
-      let currentSourceWordIndex = state.currentWordIndex;
-      // Only move to next word if we actually created a new word (had content)
-      if (action.char === ' ' && currentWord.length > 0 && currentSourceWordIndex < sourceWords.length - 1) {
-        currentSourceWordIndex++;
-      }
-      // When finished, we're on the last word
-      if (isFinished && action.char !== ' ') {
-        currentSourceWordIndex = sourceWords.length - 1;
-      }
+      const currentSourceWordIndex = state.currentWordIndex;
 
       // Word boundary validation - validate when space is typed or text is finished
       const newErrors = new Set(state.errors);
