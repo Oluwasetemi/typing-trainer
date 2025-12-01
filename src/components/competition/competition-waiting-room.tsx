@@ -40,17 +40,17 @@ export default function CompetitionWaitingRoom({
   };
 
   return (
-    <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
+    <div className="max-w-4xl mx-auto bg-white dark:bg-zinc-900 rounded-lg shadow-lg p-6">
       <header className="text-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">Waiting Room</h1>
-        <p className="text-gray-600">{session.name}</p>
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2">Waiting Room</h1>
+        <p className="text-gray-600 dark:text-gray-400">{session.name}</p>
       </header>
 
       {/* Competition Code */}
-      <div className="bg-linear-to-r from-purple-50 to-blue-50 p-4 rounded-lg border border-purple-200 mb-6">
+      <div className="bg-linear-to-r from-purple-50 to-blue-50 dark:from-purple-950/20 dark:to-blue-950/20 p-4 rounded-lg border border-purple-200 dark:border-purple-800 mb-6">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-gray-600 mb-1">Competition Code:</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Competition Code:</p>
             <p className="text-2xl font-bold text-purple-700">{session.code}</p>
           </div>
           <button

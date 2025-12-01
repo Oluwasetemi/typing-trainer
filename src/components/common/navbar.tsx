@@ -1,6 +1,7 @@
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
 import { Link, useRouterState } from '@tanstack/react-router';
 
+import { useTheme } from '../../context/theme-context';
 import { Icons } from '../../utils/icons';
 
 const navigation = [
@@ -17,6 +18,7 @@ function classNames(...classes: (string | boolean | undefined)[]) {
 export default function Navbar() {
   const router = useRouterState();
   const currentPath = router.location.pathname;
+  const { themeMode, toggleMode } = useTheme();
 
   return (
     <Disclosure
@@ -67,15 +69,25 @@ export default function Navbar() {
               </div>
             </div>
           </div>
-          <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+          <div className="absolute inset-y-0 right-0 flex items-center gap-2 pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
             <button
               type="button"
-              className="relative rounded-full p-1 text-gray-400 focus:outline-2 focus:outline-offset-2 focus:outline-purple-500 dark:hover:text-white"
+              onClick={toggleMode}
+              className="relative rounded-full p-2 text-gray-400 hover:bg-white/5 hover:text-white focus:outline-2 focus:outline-offset-2 focus:outline-purple-500 transition-colors"
+              title={`Theme: ${themeMode}`}
             >
-              <span className="absolute -inset-1.5" />
-              <span className="sr-only">View notifications</span>
-              <Icons.Notifications aria-hidden="true" className="size-6" />
+              <span className="sr-only">Toggle theme (currently {themeMode})</span>
+              {themeMode === 'light' && <Icons.Sun aria-hidden="true" className="size-5" />}
+              {themeMode === 'dark' && <Icons.Moon aria-hidden="true" className="size-5" />}
+              {themeMode === 'auto' && <Icons.Sparkles aria-hidden="true" className="size-5" />}
             </button>
+            <Link
+              to="/settings"
+              className="relative rounded-full p-2 text-gray-400 hover:bg-white/5 hover:text-white focus:outline-2 focus:outline-offset-2 focus:outline-purple-500 transition-colors"
+            >
+              <span className="sr-only">Settings</span>
+              <Icons.Settings aria-hidden="true" className="size-5" />
+            </Link>
           </div>
         </div>
       </div>

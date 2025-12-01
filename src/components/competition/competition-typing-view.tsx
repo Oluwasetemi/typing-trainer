@@ -94,22 +94,22 @@ function CompetitionTypingContent({
   }, [state.finished, state.endTime, state.startTime, state.currentIndex, state.errors.size, onFinish]);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className="min-h-screen bg-gray-50 dark:bg-zinc-950 p-4">
       <div className="max-w-7xl mx-auto">
         <header className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2">
             🏁
             {' '}
             {session.name}
           </h1>
-          <p className="text-gray-600">Type as fast and accurately as you can!</p>
+          <p className="text-gray-600 dark:text-gray-400">Type as fast and accurately as you can!</p>
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Typing Area (2/3 width on large screens) */}
           <div className="lg:col-span-2 space-y-4">
             {/* Progress Bar */}
-            <div className="bg-white rounded-lg shadow p-4">
+            <div className="bg-white dark:bg-zinc-900 rounded-lg shadow p-4">
               <ProgressBar />
             </div>
 
@@ -117,7 +117,7 @@ function CompetitionTypingContent({
             <ErrorFeedback />
 
             {/* Typing Area */}
-            <main className="bg-white rounded-lg shadow p-6">
+            <main className="bg-white dark:bg-zinc-900 rounded-lg shadow p-6">
               <div className="space-y-4">
                 <TextDisplay />
                 <TypingInput />

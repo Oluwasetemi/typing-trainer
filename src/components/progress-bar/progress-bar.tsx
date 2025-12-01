@@ -8,23 +8,23 @@ export default function ProgressBar() {
   return (
     <div className="w-full">
       <div className="flex justify-between items-center mb-2">
-        <span className="text-sm font-medium text-gray-700">Progress</span>
-        <span className="text-sm text-gray-500">
+        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Progress</span>
+        <span className="text-sm text-gray-500 dark:text-gray-400">
           {Math.round(progress)}
           %
         </span>
       </div>
 
-      <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+      <div className="w-full bg-gray-200 dark:bg-zinc-700 rounded-full h-3 overflow-hidden">
         <div
           className={`
             h-full rounded-full transition-all duration-300 ease-out
             ${
     state.finished
-      ? 'bg-green-500'
+      ? 'bg-green-500 dark:bg-green-600'
       : progress > 0
-        ? 'bg-blue-500'
-        : 'bg-gray-300'
+        ? 'bg-blue-500 dark:bg-blue-600'
+        : 'bg-gray-300 dark:bg-zinc-600'
     }
           `}
           style={{ width: `${Math.max(progress, 0)}%` }}
@@ -47,7 +47,7 @@ export default function ProgressBar() {
       </div>
 
       {/* Text summary */}
-      <div className="flex justify-between items-center mt-1 text-xs text-gray-500">
+      <div className="flex justify-between items-center mt-1 text-xs text-gray-500 dark:text-gray-400">
         <span>
           {state.currentIndex}
           {' '}
@@ -57,7 +57,7 @@ export default function ProgressBar() {
           characters
         </span>
         {state.finished && (
-          <span className="text-green-600 font-medium flex items-center gap-1">
+          <span className="text-green-600 dark:text-green-400 font-medium flex items-center gap-1">
             <Icons.Check size={16} />
             Complete!
           </span>

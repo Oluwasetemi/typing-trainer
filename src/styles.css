@@ -1,29 +1,118 @@
 @import 'tailwindcss';
 
+@custom-variant dark (&:where(.dark, .dark *));
+@custom-variant light (&:is(.light, .light *));
+@custom-variant auto (&:is(.auto, .auto *));
+
+@theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji', Segoe UI Symbol, 'Noto Color Emoji';
+
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+}
+
 body {
   @apply m-0;
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
-    'Helvetica Neue', sans-serif;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+
+  :root {
+    --navbar-height: 50px;
+    scroll-padding-top: var(--navbar-height);
+  }
+}
+
+button {
+  @apply cursor-pointer;
+}
+
+@layer base {
+  html,
+  body {
+    @apply text-gray-900 bg-white dark:bg-zinc-950 dark:text-gray-100;
+  }
+
+  .using-mouse * {
+    outline: none !important;
+  }
+
+  * {
+    scrollbar-color: var(--color-gray-400) var(--color-gray-100);
+  }
+
+  *::-webkit-scrollbar,
+  * scrollbar {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  *::-webkit-scrollbar-track,
+  * scrollbar-track {
+    background: var(--color-gray-100);
+  }
+
+  *::-webkit-scrollbar-thumb,
+  * scrollbar-thumb {
+    background: var(--color-gray-300);
+    border-radius: 0.5rem;
+    border: 3px solid var(--color-gray-100);
+  }
+
+  html.dark {
+    &,
+    * {
+      color-scheme: dark;
+    }
+
+    &,
+    * {
+      scrollbar-color: var(--color-gray-700) var(--color-gray-800);
+    }
+
+    &::-webkit-scrollbar,
+    *::-webkit-scrollbar,
+    * scrollbar {
+      width: 1rem;
+      height: 1rem;
+    }
+
+    & *::-webkit-scrollbar-track,
+    *::-webkit-scrollbar-track,
+    * scrollbar-track {
+      background: var(--color-gray-800);
+    }
+
+    &::-webkit-scrollbar-thumb,
+    *::-webkit-scrollbar-thumb,
+    * scrollbar-thumb {
+      background: var(--color-gray-600);
+      border-radius: 0.5rem;
+      border: 3px solid var(--color-gray-800);
+    }
+  }
+
+  [disabled] {
+    @apply opacity-50 pointer-events-none;
+  }
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
-}
-
-/* High contrast focus rings for better accessibility */
-.focus-visible\:ring-2:focus-visible,
-.focus\:ring-2:focus {
-  @apply ring-2 ring-offset-2;
-}
-
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  body {
-    @apply bg-gray-900 text-white;
-  }
 }
 
 /* Reduce motion for users who prefer it */
@@ -38,22 +127,4 @@ code {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
   }
-}
-
-/* Improve focus visibility */
-*:focus-visible {
-  outline: 2px solid #3b82f6;
-  outline-offset: 2px;
-}
-
-/* Ensure adequate color contrast */
-.text-gray-500 {
-  @apply text-gray-600;
-}
-
-/* Mobile-friendly touch targets */
-button,
-.cursor-pointer {
-  min-height: 44px;
-  min-width: 44px;
 }

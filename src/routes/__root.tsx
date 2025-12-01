@@ -1,14 +1,16 @@
 import { TanstackDevtools } from '@tanstack/react-devtools';
-import { createRootRoute, HeadContent, Outlet } from '@tanstack/react-router';
+import { createRootRoute, Outlet } from '@tanstack/react-router';
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 
+import NotFound404Page from '../components/404-page';
 import Navbar from '../components/common/navbar';
 import OfflineIndicator from '../components/common/offline-indicator';
 import UpdatePrompt from '../components/common/update-prompt';
+import { SettingsProvider } from '../context/settings-context';
+import { ThemeProvider } from '../context/theme-context';
 import { generateDefaultOGImageUrl } from '../utils/og-image';
 
 export const Route = createRootRoute({
-  ssr: true,
   head: () => ({
     title: `Real-time Typing Trainer`,
     meta: [
@@ -79,32 +81,31 @@ export const Route = createRootRoute({
     ],
   }),
   component: () => (
-    <div className="min-h-screen bg-gray-50">
-      <HeadContent />
-      <OfflineIndicator />
-      <Navbar />
-      <main className="flex items-center justify-center p-4">
-        <Outlet />
-      </main>
-      <UpdatePrompt />
-      {import.meta.env.DEV && (
-        <TanstackDevtools
-          config={{
-            position: 'bottom-left',
-          }}
-          plugins={[
-            {
-              name: 'Tanstack Router',
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-          ]}
-        />
-      )}
-    </div>
+    <ThemeProvider>
+      <SettingsProvider>
+        <div className="min-h-screen bg-gray-50 dark:bg-zinc-950">
+          <OfflineIndicator />
+          <Navbar />
+          <main className="flex items-center justify-center p-4">
+            <Outlet />
+          </main>
+          <UpdatePrompt />
+          {import.meta.env.DEV && (
+            <TanstackDevtools
+              config={{
+                position: 'bottom-left',
+              }}
+              plugins={[
+                {
+                  name: 'Tanstack Router',
+                  render: <TanStackRouterDevtoolsPanel />,
+                },
+              ]}
+            />
+          )}
+        </div>
+      </SettingsProvider>
+    </ThemeProvider>
   ),
-  notFoundComponent: () => (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <main className="text-center text-2xl">Not Found</main>
-    </div>
-  ),
+  notFoundComponent: NotFound404Page,
 });

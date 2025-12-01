@@ -1,5 +1,6 @@
 import { Dialog, DialogBackdrop, DialogPanel, DialogTitle } from '@headlessui/react';
 
+import { Button } from '../button';
 import { Icons } from '../../utils/icons';
 
 type ConfirmModalProps = {
@@ -27,25 +28,25 @@ export default function ConfirmModal({
     info: {
       bg: 'bg-blue-100',
       iconColor: 'text-blue-600',
-      buttonBg: 'bg-blue-600 hover:bg-blue-500',
+      buttonColor: 'blue' as const,
       icon: Icons.Check,
     },
     success: {
       bg: 'bg-green-100',
       iconColor: 'text-green-600',
-      buttonBg: 'bg-green-600 hover:bg-green-500',
+      buttonColor: 'green' as const,
       icon: Icons.Check,
     },
     warning: {
       bg: 'bg-yellow-100',
       iconColor: 'text-yellow-600',
-      buttonBg: 'bg-yellow-600 hover:bg-yellow-500',
+      buttonColor: 'yellow' as const,
       icon: Icons.Target,
     },
     danger: {
       bg: 'bg-red-100',
       iconColor: 'text-red-600',
-      buttonBg: 'bg-red-600 hover:bg-red-500',
+      buttonColor: 'red' as const,
       icon: Icons.Close,
     },
   };
@@ -82,20 +83,22 @@ export default function ConfirmModal({
               </div>
             </div>
             <div className="mt-5 sm:mt-6 sm:grid sm:grid-flow-row-dense sm:grid-cols-2 sm:gap-3">
-              <button
+              <Button
                 type="button"
                 onClick={onConfirm}
-                className={`inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-xs focus-visible:outline-2 focus-visible:outline-offset-2 sm:col-start-2 ${style.buttonBg}`}
+                color={style.buttonColor}
+                className="sm:col-start-2"
               >
                 {confirmText}
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
                 onClick={onCancel}
-                className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:col-start-1 sm:mt-0"
+                outline
+                className="mt-3 sm:col-start-1 sm:mt-0"
               >
                 {cancelText}
-              </button>
+              </Button>
             </div>
           </DialogPanel>
         </div>
