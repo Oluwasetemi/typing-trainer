@@ -9,19 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TournamentRouteImport } from './routes/tournament'
 import { Route as SpectatorRouteImport } from './routes/spectator'
 import { Route as SoloRouteImport } from './routes/solo'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SessionRouteImport } from './routes/session'
 import { Route as CompetitionRouteImport } from './routes/competition'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TournamentIndexRouteImport } from './routes/tournament/index'
+import { Route as TournamentTournamentIdRouteImport } from './routes/tournament/$tournamentId'
+import { Route as TournamentTournamentIdLobbyRouteImport } from './routes/tournament/$tournamentId/lobby'
+import { Route as TournamentTournamentIdCreateRouteImport } from './routes/tournament/$tournamentId/create'
+import { Route as TournamentTournamentIdBracketRouteImport } from './routes/tournament/$tournamentId/bracket'
 
-const TournamentRoute = TournamentRouteImport.update({
-  id: '/tournament',
-  path: '/tournament',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const SpectatorRoute = SpectatorRouteImport.update({
   id: '/spectator',
   path: '/spectator',
@@ -52,6 +51,34 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TournamentIndexRoute = TournamentIndexRouteImport.update({
+  id: '/tournament/',
+  path: '/tournament/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TournamentTournamentIdRoute = TournamentTournamentIdRouteImport.update({
+  id: '/tournament/$tournamentId',
+  path: '/tournament/$tournamentId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TournamentTournamentIdLobbyRoute =
+  TournamentTournamentIdLobbyRouteImport.update({
+    id: '/lobby',
+    path: '/lobby',
+    getParentRoute: () => TournamentTournamentIdRoute,
+  } as any)
+const TournamentTournamentIdCreateRoute =
+  TournamentTournamentIdCreateRouteImport.update({
+    id: '/create',
+    path: '/create',
+    getParentRoute: () => TournamentTournamentIdRoute,
+  } as any)
+const TournamentTournamentIdBracketRoute =
+  TournamentTournamentIdBracketRouteImport.update({
+    id: '/bracket',
+    path: '/bracket',
+    getParentRoute: () => TournamentTournamentIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -60,7 +87,11 @@ export interface FileRoutesByFullPath {
   '/settings': typeof SettingsRoute
   '/solo': typeof SoloRoute
   '/spectator': typeof SpectatorRoute
-  '/tournament': typeof TournamentRoute
+  '/tournament/$tournamentId': typeof TournamentTournamentIdRouteWithChildren
+  '/tournament': typeof TournamentIndexRoute
+  '/tournament/$tournamentId/bracket': typeof TournamentTournamentIdBracketRoute
+  '/tournament/$tournamentId/create': typeof TournamentTournamentIdCreateRoute
+  '/tournament/$tournamentId/lobby': typeof TournamentTournamentIdLobbyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -69,7 +100,11 @@ export interface FileRoutesByTo {
   '/settings': typeof SettingsRoute
   '/solo': typeof SoloRoute
   '/spectator': typeof SpectatorRoute
-  '/tournament': typeof TournamentRoute
+  '/tournament/$tournamentId': typeof TournamentTournamentIdRouteWithChildren
+  '/tournament': typeof TournamentIndexRoute
+  '/tournament/$tournamentId/bracket': typeof TournamentTournamentIdBracketRoute
+  '/tournament/$tournamentId/create': typeof TournamentTournamentIdCreateRoute
+  '/tournament/$tournamentId/lobby': typeof TournamentTournamentIdLobbyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -79,7 +114,11 @@ export interface FileRoutesById {
   '/settings': typeof SettingsRoute
   '/solo': typeof SoloRoute
   '/spectator': typeof SpectatorRoute
-  '/tournament': typeof TournamentRoute
+  '/tournament/$tournamentId': typeof TournamentTournamentIdRouteWithChildren
+  '/tournament/': typeof TournamentIndexRoute
+  '/tournament/$tournamentId/bracket': typeof TournamentTournamentIdBracketRoute
+  '/tournament/$tournamentId/create': typeof TournamentTournamentIdCreateRoute
+  '/tournament/$tournamentId/lobby': typeof TournamentTournamentIdLobbyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -90,7 +129,11 @@ export interface FileRouteTypes {
     | '/settings'
     | '/solo'
     | '/spectator'
+    | '/tournament/$tournamentId'
     | '/tournament'
+    | '/tournament/$tournamentId/bracket'
+    | '/tournament/$tournamentId/create'
+    | '/tournament/$tournamentId/lobby'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -99,7 +142,11 @@ export interface FileRouteTypes {
     | '/settings'
     | '/solo'
     | '/spectator'
+    | '/tournament/$tournamentId'
     | '/tournament'
+    | '/tournament/$tournamentId/bracket'
+    | '/tournament/$tournamentId/create'
+    | '/tournament/$tournamentId/lobby'
   id:
     | '__root__'
     | '/'
@@ -108,7 +155,11 @@ export interface FileRouteTypes {
     | '/settings'
     | '/solo'
     | '/spectator'
-    | '/tournament'
+    | '/tournament/$tournamentId'
+    | '/tournament/'
+    | '/tournament/$tournamentId/bracket'
+    | '/tournament/$tournamentId/create'
+    | '/tournament/$tournamentId/lobby'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -118,18 +169,12 @@ export interface RootRouteChildren {
   SettingsRoute: typeof SettingsRoute
   SoloRoute: typeof SoloRoute
   SpectatorRoute: typeof SpectatorRoute
-  TournamentRoute: typeof TournamentRoute
+  TournamentTournamentIdRoute: typeof TournamentTournamentIdRouteWithChildren
+  TournamentIndexRoute: typeof TournamentIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/tournament': {
-      id: '/tournament'
-      path: '/tournament'
-      fullPath: '/tournament'
-      preLoaderRoute: typeof TournamentRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/spectator': {
       id: '/spectator'
       path: '/spectator'
@@ -172,8 +217,61 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/tournament/': {
+      id: '/tournament/'
+      path: '/tournament'
+      fullPath: '/tournament'
+      preLoaderRoute: typeof TournamentIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tournament/$tournamentId': {
+      id: '/tournament/$tournamentId'
+      path: '/tournament/$tournamentId'
+      fullPath: '/tournament/$tournamentId'
+      preLoaderRoute: typeof TournamentTournamentIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/tournament/$tournamentId/lobby': {
+      id: '/tournament/$tournamentId/lobby'
+      path: '/lobby'
+      fullPath: '/tournament/$tournamentId/lobby'
+      preLoaderRoute: typeof TournamentTournamentIdLobbyRouteImport
+      parentRoute: typeof TournamentTournamentIdRoute
+    }
+    '/tournament/$tournamentId/create': {
+      id: '/tournament/$tournamentId/create'
+      path: '/create'
+      fullPath: '/tournament/$tournamentId/create'
+      preLoaderRoute: typeof TournamentTournamentIdCreateRouteImport
+      parentRoute: typeof TournamentTournamentIdRoute
+    }
+    '/tournament/$tournamentId/bracket': {
+      id: '/tournament/$tournamentId/bracket'
+      path: '/bracket'
+      fullPath: '/tournament/$tournamentId/bracket'
+      preLoaderRoute: typeof TournamentTournamentIdBracketRouteImport
+      parentRoute: typeof TournamentTournamentIdRoute
+    }
   }
 }
+
+interface TournamentTournamentIdRouteChildren {
+  TournamentTournamentIdBracketRoute: typeof TournamentTournamentIdBracketRoute
+  TournamentTournamentIdCreateRoute: typeof TournamentTournamentIdCreateRoute
+  TournamentTournamentIdLobbyRoute: typeof TournamentTournamentIdLobbyRoute
+}
+
+const TournamentTournamentIdRouteChildren: TournamentTournamentIdRouteChildren =
+  {
+    TournamentTournamentIdBracketRoute: TournamentTournamentIdBracketRoute,
+    TournamentTournamentIdCreateRoute: TournamentTournamentIdCreateRoute,
+    TournamentTournamentIdLobbyRoute: TournamentTournamentIdLobbyRoute,
+  }
+
+const TournamentTournamentIdRouteWithChildren =
+  TournamentTournamentIdRoute._addFileChildren(
+    TournamentTournamentIdRouteChildren,
+  )
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -182,7 +280,8 @@ const rootRouteChildren: RootRouteChildren = {
   SettingsRoute: SettingsRoute,
   SoloRoute: SoloRoute,
   SpectatorRoute: SpectatorRoute,
-  TournamentRoute: TournamentRoute,
+  TournamentTournamentIdRoute: TournamentTournamentIdRouteWithChildren,
+  TournamentIndexRoute: TournamentIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

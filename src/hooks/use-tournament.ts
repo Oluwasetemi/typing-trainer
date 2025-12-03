@@ -25,17 +25,26 @@ export function useTournament(tournamentId: string, userId: string) {
     host: import.meta.env.DEV ? 'localhost:1999' : 'typing-trainer.oluwasetemi.partykit.dev',
     room: tournamentId,
     party: 'tournament',
-    onOpen() {
-      console.log('[useTournament] WebSocket connected');
+    onOpen(event) {
+      console.warn('[useTournament] WebSocket connected');
       setIsConnected(true);
+
+      // Update connection ID on server
+      console.warn('[useTournament] Sending UPDATE_CONNECTION for userId:', userId);
+      // @ts-expect-error - socket is the websocket instance
+      event.target.send(JSON.stringify({
+        type: 'UPDATE_CONNECTION',
+        userId,
+      }));
     },
     onClose() {
-      console.log('[useTournament] WebSocket disconnected');
+      console.warn('[useTournament] WebSocket disconnected');
       setIsConnected(false);
     },
     onMessage(event: MessageEvent) {
       try {
         const message = JSON.parse(event.data) as TournamentServerMessage;
+        // eslint-disable-next-line ts/no-use-before-define
         handleServerMessage(message);
       }
       catch (error) {
@@ -43,7 +52,7 @@ export function useTournament(tournamentId: string, userId: string) {
       }
     },
     onError() {
-      console.log('[useTournament] WebSocket error');
+      console.warn('[useTournament] WebSocket error');
       setIsConnected(false);
       setState(prev => ({
         ...prev,
@@ -53,7 +62,7 @@ export function useTournament(tournamentId: string, userId: string) {
   });
 
   const handleServerMessage = useCallback((message: TournamentServerMessage) => {
-    console.log('[useTournament] Received:', message.type);
+    console.warn('[useTournament] Received:', message.type);
     switch (message.type) {
       case 'TOURNAMENT_STATE':
       case 'TOURNAMENT_STARTED':
@@ -127,6 +136,12 @@ export function useTournament(tournamentId: string, userId: string) {
         break;
 
       case 'MATCH_READY':
+        console.warn('[useTournament] MATCH_READY received:', {
+          matchId: message.match.id,
+          readyParticipants: message.match.readyParticipants,
+          participants: message.match.participants,
+        });
+
         setState((prev) => {
           if (!prev.tournament)
             return prev;
@@ -169,6 +184,12 @@ export function useTournament(tournamentId: string, userId: string) {
         break;
 
       case 'MATCH_COMPLETED':
+        console.warn('[useTournament] MATCH_COMPLETED received:', {
+          matchId: message.matchId,
+          winnerId: message.winnerId,
+          resultsCount: message.results.length,
+        });
+
         setState((prev) => {
           if (!prev.tournament)
             return prev;
@@ -185,6 +206,8 @@ export function useTournament(tournamentId: string, userId: string) {
                     message.results.forEach((r) => {
                       results[r.userId] = r;
                     });
+
+                    console.warn('[useTournament] Updating match:', match.id, 'to completed');
 
                     return {
                       ...match,
@@ -231,11 +254,18 @@ export function useTournament(tournamentId: string, userId: string) {
   }, []);
 
   const sendMessage = useCallback((message: TournamentClientMessage) => {
+    console.warn('[useTournament] sendMessage called:', {
+      type: message.type,
+      isConnected,
+      socketReadyState: socket?.readyState,
+    });
+
     if (isConnected) {
-      console.log('[useTournament] Sending message:', message.type);
+      console.warn('[useTournament] Sending message:', message.type, message);
       socket.send(JSON.stringify(message));
-    } else {
-      console.warn('[useTournament] Cannot send message, not connected');
+    }
+    else {
+      console.error('[useTournament] Cannot send message, not connected. IsConnected:', isConnected);
     }
   }, [socket, isConnected]);
 

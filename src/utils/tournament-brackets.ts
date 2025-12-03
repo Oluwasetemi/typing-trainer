@@ -28,7 +28,7 @@ export function generateSingleEliminationBracket(
 
   // Subsequent rounds: Create placeholder matches
   for (let i = 2; i <= totalRounds; i++) {
-    const matchCount = Math.pow(2, totalRounds - i);
+    const matchCount = 2 ** (totalRounds - i);
     const roundMatches: Match[] = [];
 
     for (let j = 0; j < matchCount; j++) {
@@ -102,8 +102,8 @@ function generateLosersBracket(participantCount: number, tournamentId: string): 
 
   for (let i = 1; i <= losersRoundsCount; i++) {
     const matchCount = i % 2 === 1
-      ? Math.pow(2, winnersRounds - Math.ceil(i / 2))
-      : Math.pow(2, winnersRounds - Math.ceil(i / 2) - 1);
+      ? 2 ** (winnersRounds - Math.ceil(i / 2))
+      : 2 ** (winnersRounds - Math.ceil(i / 2) - 1);
 
     const matches: Match[] = [];
     for (let j = 0; j < matchCount; j++) {

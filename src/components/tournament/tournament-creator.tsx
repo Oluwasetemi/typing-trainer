@@ -1,13 +1,14 @@
-import { useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
-import type { TournamentFormat, TournamentSettings, WinCondition } from '@/types/tournament.types';
-import { FormField, FormSection, FormActions } from '@/components/common/form-components';
+import { useState } from 'react';
 
-interface TournamentCreatorProps {
-  userId: string;
+import type { TournamentFormat, TournamentSettings, WinCondition } from '@/types/tournament.types';
+
+import { FormActions, FormField, FormSection } from '@/components/common/form-components';
+
+type TournamentCreatorProps = {
   username: string;
   onCreateTournament: (settings: TournamentSettings, name: string, username: string) => void;
-}
+};
 
 const TOURNAMENT_FORMATS: { value: TournamentFormat; label: string; description: string }[] = [
   { value: 'single-elimination', label: 'Single Elimination', description: 'Win or go home - losers are eliminated' },
@@ -68,6 +69,21 @@ export function TournamentCreator({ username, onCreateTournament }: TournamentCr
 
       <form onSubmit={handleSubmit} className="space-y-8">
         <FormSection
+          title="Host Information"
+          description="Tournament host details"
+        >
+          <FormField
+            label="Your Username"
+            id="hostUsername"
+            type="text"
+            value={username}
+            onChange={() => {}}
+            disabled
+            colSpan="full"
+          />
+        </FormSection>
+
+        <FormSection
           title="Tournament Details"
           description="Basic information about your tournament"
         >
@@ -79,6 +95,7 @@ export function TournamentCreator({ username, onCreateTournament }: TournamentCr
             onChange={value => setTournamentName(value)}
             placeholder="My Typing Tournament"
             required
+            colSpan="full"
           />
         </FormSection>
 
@@ -86,7 +103,7 @@ export function TournamentCreator({ username, onCreateTournament }: TournamentCr
           title="Tournament Format"
           description={selectedFormat?.description || 'Select how participants will compete'}
         >
-          <div className="space-y-2">
+          <div className="col-span-full space-y-2">
             <label htmlFor="format" className="block text-sm/6 font-medium text-gray-900 dark:text-gray-100">
               Format
             </label>
@@ -109,7 +126,7 @@ export function TournamentCreator({ username, onCreateTournament }: TournamentCr
           title="Win Condition"
           description={selectedCondition?.description || 'How winners are determined'}
         >
-          <div className="space-y-4">
+          <div className="col-span-full space-y-4">
             <div className="space-y-2">
               <label htmlFor="winCondition" className="block text-sm/6 font-medium text-gray-900 dark:text-gray-100">
                 Condition
@@ -136,6 +153,7 @@ export function TournamentCreator({ username, onCreateTournament }: TournamentCr
                 value={minAccuracy.toString()}
                 onChange={value => setMinAccuracy(Number(value))}
                 required
+                colSpan="full"
               />
             )}
 
@@ -148,6 +166,7 @@ export function TournamentCreator({ username, onCreateTournament }: TournamentCr
                   value={targetWpm.toString()}
                   onChange={value => setTargetWpm(Number(value))}
                   required
+                  colSpan="full"
                 />
                 <FormField
                   label="Target Progress (%)"
@@ -156,6 +175,7 @@ export function TournamentCreator({ username, onCreateTournament }: TournamentCr
                   value={targetProgress.toString()}
                   onChange={value => setTargetProgress(Number(value))}
                   required
+                  colSpan="full"
                 />
               </>
             )}
@@ -166,7 +186,7 @@ export function TournamentCreator({ username, onCreateTournament }: TournamentCr
           title="Tournament Size"
           description="Number of participants (must be power of 2 for elimination formats)"
         >
-          <div className="space-y-2">
+          <div className="col-span-full space-y-2">
             <label htmlFor="size" className="block text-sm/6 font-medium text-gray-900 dark:text-gray-100">
               Size
             </label>
@@ -178,7 +198,9 @@ export function TournamentCreator({ username, onCreateTournament }: TournamentCr
             >
               {TOURNAMENT_SIZES.map(s => (
                 <option key={s} value={s}>
-                  {s} Players
+                  {s}
+                  {' '}
+                  Players
                 </option>
               ))}
             </select>
@@ -196,6 +218,7 @@ export function TournamentCreator({ username, onCreateTournament }: TournamentCr
             value={(advanceDelay / 1000).toString()}
             onChange={value => setAdvanceDelay(Number(value) * 1000)}
             required
+            colSpan="full"
           />
         </FormSection>
 

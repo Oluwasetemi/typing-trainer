@@ -8,6 +8,7 @@ type CompetitionResultsProps = {
   competitionName: string;
   onRaceAgain: () => void;
   onNewCompetition: () => void;
+  tournamentMode?: boolean;
 };
 
 export default function CompetitionResults({
@@ -15,6 +16,7 @@ export default function CompetitionResults({
   competitionName,
   onRaceAgain,
   onNewCompetition,
+  tournamentMode = false,
 }: CompetitionResultsProps) {
   const yourEntry = leaderboard.find(entry => entry.isYou);
   const topThree = leaderboard.slice(0, 3);
@@ -97,24 +99,37 @@ export default function CompetitionResults({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-4">
-          <button
-            type="button"
-            onClick={onRaceAgain}
-            className="flex-1 px-6 py-3 bg-linear-to-r from-green-500 to-teal-500 text-white rounded-lg hover:from-green-600 hover:to-teal-600 font-semibold shadow-lg transition-all flex items-center justify-center gap-2"
-          >
-            <Icons.Reload size={20} />
-            Race Again
-          </button>
-          <button
-            type="button"
-            onClick={onNewCompetition}
-            className="flex-1 px-6 py-3 bg-linear-to-r from-purple-500 to-blue-500 text-white rounded-lg hover:from-purple-600 hover:to-blue-600 font-semibold shadow-lg transition-all flex items-center justify-center gap-2"
-          >
-            <Icons.Add size={20} />
-            New Competition
-          </button>
-        </div>
+        {tournamentMode ? (
+          <div className="flex justify-center">
+            <button
+              type="button"
+              onClick={onRaceAgain}
+              className="px-8 py-3 bg-linear-to-r from-purple-500 to-blue-500 text-white rounded-lg hover:from-purple-600 hover:to-blue-600 font-semibold shadow-lg transition-all flex items-center justify-center gap-2"
+            >
+              <Icons.Trophy size={20} />
+              Back to Tournament
+            </button>
+          </div>
+        ) : (
+          <div className="flex gap-4">
+            <button
+              type="button"
+              onClick={onRaceAgain}
+              className="flex-1 px-6 py-3 bg-linear-to-r from-green-500 to-teal-500 text-white rounded-lg hover:from-green-600 hover:to-teal-600 font-semibold shadow-lg transition-all flex items-center justify-center gap-2"
+            >
+              <Icons.Reload size={20} />
+              Race Again
+            </button>
+            <button
+              type="button"
+              onClick={onNewCompetition}
+              className="flex-1 px-6 py-3 bg-linear-to-r from-purple-500 to-blue-500 text-white rounded-lg hover:from-purple-600 hover:to-blue-600 font-semibold shadow-lg transition-all flex items-center justify-center gap-2"
+            >
+              <Icons.Add size={20} />
+              New Competition
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

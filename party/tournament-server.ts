@@ -24,7 +24,6 @@ export default class TournamentServer implements Party.Server {
   private disconnectTimeouts = new Map<string, NodeJS.Timeout>();
 
   async onStart() {
-    console.log('starting')
     try {
       const stored = await this.room.storage.get<Tournament>('tournament');
       if (stored) {
@@ -36,9 +35,17 @@ export default class TournamentServer implements Party.Server {
     }
   }
 
-  async onConnect(_connection: Party.Connection) {
-    console.log('connecting')
-    // Wait for messages to handle joining/reconnection
+  async onConnect(connection: Party.Connection) {
+    console.log('[TournamentServer] Connection opened:', connection.id);
+
+    // Send current tournament state to newly connected client
+    if (this.tournament) {
+      console.log('[TournamentServer] Sending current tournament state to new connection');
+      this.sendToConnection(connection, {
+        type: 'TOURNAMENT_STATE',
+        tournament: this.tournament,
+      });
+    }
   }
 
   async onMessage(message: string, sender: Party.Connection) {
@@ -55,8 +62,11 @@ export default class TournamentServer implements Party.Server {
           break;
 
         case 'START_TOURNAMENT':
-          console.log('here 101')
           await this.handleStartTournament(sender);
+          break;
+
+        case 'UPDATE_CONNECTION':
+          await this.handleUpdateConnection(msg, sender);
           break;
 
         case 'READY_FOR_MATCH':
@@ -125,7 +135,7 @@ export default class TournamentServer implements Party.Server {
     },
     sender: Party.Connection,
   ) {
-    console.log('[TournamentServer] Creating tournament:', this.room.id);
+    console.warn('[TournamentServer] Creating tournament:', this.room.id);
 
     this.tournament = {
       id: this.room.id,
@@ -160,7 +170,7 @@ export default class TournamentServer implements Party.Server {
     msg: { username: string; userId: string },
     sender: Party.Connection,
   ) {
-    console.log('[TournamentServer] Join request:', { userId: msg.userId, username: msg.username, roomId: this.room.id });
+    console.warn('[TournamentServer] Join request:', { userId: msg.userId, username: msg.username, roomId: this.room.id });
 
     if (!this.tournament) {
       console.error('[TournamentServer] Tournament not found for room:', this.room.id);
@@ -252,9 +262,36 @@ export default class TournamentServer implements Party.Server {
     }));
   }
 
-  private async handleStartTournament(sender: Party.Connection) {
-    console.log('ib handleStart')
+  private async handleUpdateConnection(
+    msg: { userId: string },
+    sender: Party.Connection,
+  ) {
     if (!this.tournament) {
+      return;
+    }
+
+    const participant = this.tournament.participants[msg.userId];
+    if (participant) {
+      console.log('[TournamentServer] Updating connection ID for user:', msg.userId, 'from', participant.connectionId, 'to', sender.id);
+      participant.connectionId = sender.id;
+      participant.isConnected = true;
+
+      // Clear any disconnect timeout
+      const existingTimeout = this.disconnectTimeouts.get(msg.userId);
+      if (existingTimeout) {
+        clearTimeout(existingTimeout);
+        this.disconnectTimeouts.delete(msg.userId);
+      }
+
+      await this.persistTournament();
+    }
+  }
+
+  private async handleStartTournament(sender: Party.Connection) {
+    console.warn('[TournamentServer] START_TOURNAMENT received from connection:', sender.id);
+
+    if (!this.tournament) {
+      console.error('[TournamentServer] Tournament not found');
       this.sendToConnection(sender, {
         type: 'ERROR',
         message: 'Tournament not found',
@@ -262,12 +299,27 @@ export default class TournamentServer implements Party.Server {
       return;
     }
 
+    console.warn('[TournamentServer] Tournament exists:', this.tournament.id);
+    console.warn('[TournamentServer] Host user ID:', this.tournament.hostUserId);
+    console.warn('[TournamentServer] All participants:', Object.values(this.tournament.participants).map(p => ({
+      userId: p.userId,
+      username: p.username,
+      connectionId: p.connectionId,
+    })));
+
     // Find participant by connection ID
     const senderParticipant = Object.values(this.tournament.participants).find(
       p => p.connectionId === sender.id,
     );
 
+    console.warn('[TournamentServer] Sender participant:', senderParticipant ? {
+      userId: senderParticipant.userId,
+      username: senderParticipant.username,
+      isHost: senderParticipant.userId === this.tournament.hostUserId,
+    } : 'NOT FOUND');
+
     if (!senderParticipant || senderParticipant.userId !== this.tournament.hostUserId) {
+      console.error('[TournamentServer] Authorization failed - not host');
       this.sendToConnection(sender, {
         type: 'ERROR',
         message: 'Only the host can start the tournament',
@@ -276,13 +328,18 @@ export default class TournamentServer implements Party.Server {
     }
 
     const participantCount = Object.keys(this.tournament.participants).length;
+    console.warn('[TournamentServer] Participant count:', participantCount);
+
     if (participantCount < 2) {
+      console.error('[TournamentServer] Not enough participants');
       this.sendToConnection(sender, {
         type: 'ERROR',
         message: 'Need at least 2 participants',
       });
       return;
     }
+
+    console.warn('[TournamentServer] Starting tournament with format:', this.tournament.settings.format);
 
     // Generate bracket based on format
     const participants = Object.values(this.tournament.participants);
@@ -320,15 +377,21 @@ export default class TournamentServer implements Party.Server {
     this.tournament.startedAt = Date.now();
     this.tournament.currentRound = 1;
 
+    console.warn('[TournamentServer] Tournament state set to in-progress, current round:', this.tournament.currentRound);
+
     await this.persistTournament();
+    console.warn('[TournamentServer] Tournament persisted');
 
     this.room.broadcast(JSON.stringify({
       type: 'TOURNAMENT_STARTED',
       tournament: this.tournament,
     } as TournamentServerMessage));
 
+    console.warn('[TournamentServer] TOURNAMENT_STARTED broadcast sent');
+
     // Start first round
     await this.startRound(1);
+    console.warn('[TournamentServer] First round started');
   }
 
   private async startRound(roundNumber: number) {
@@ -383,7 +446,7 @@ export default class TournamentServer implements Party.Server {
     if (!this.tournament)
       return;
 
-    console.log('[TournamentServer] Ready for match:', msg.matchId);
+    console.warn('[TournamentServer] Ready for match:', msg.matchId);
 
     const match = this.findMatch(msg.matchId);
     if (!match) {
@@ -401,11 +464,25 @@ export default class TournamentServer implements Party.Server {
       return;
     }
 
-    console.log('[TournamentServer] Participant ready:', participant.username);
+    console.warn('[TournamentServer] Participant ready:', participant.username);
 
-    // For now, auto-start the match when anyone is ready
-    // In a full implementation, we'd wait for all participants
-    if (match.state === 'ready') {
+    // Initialize readyParticipants array if it doesn't exist
+    if (!match.readyParticipants) {
+      match.readyParticipants = [];
+    }
+
+    // Add participant to ready list if not already there
+    if (!match.readyParticipants.includes(participant.userId)) {
+      match.readyParticipants.push(participant.userId);
+      console.warn('[TournamentServer] Ready participants:', match.readyParticipants.length, '/', match.participants.length);
+    }
+
+    // Check if all participants are ready
+    const allReady = match.participants.every(p => match.readyParticipants?.includes(p));
+
+    console.warn('[TournamentServer] All participants ready?', allReady);
+
+    if (allReady && match.state === 'ready') {
       match.state = 'active';
 
       // Create a competition room ID for this match
@@ -421,7 +498,16 @@ export default class TournamentServer implements Party.Server {
         competitionId,
       }));
 
-      console.log('[TournamentServer] Match started:', { matchId: match.id, competitionId });
+      console.warn('[TournamentServer] Match started:', { matchId: match.id, competitionId });
+    }
+    else {
+      // Broadcast updated match state so clients can see who's ready
+      await this.persistTournament();
+
+      this.room.broadcast(JSON.stringify({
+        type: 'MATCH_READY',
+        match,
+      }));
     }
   }
 

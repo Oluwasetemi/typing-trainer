@@ -8,7 +8,7 @@ export type MatchState = 'pending' | 'ready' | 'countdown' | 'active' | 'complet
 
 export type BracketType = 'winners' | 'losers'; // For double elimination
 
-export interface TournamentSettings {
+export type TournamentSettings = {
   format: TournamentFormat;
   winCondition: WinCondition;
   size: number; // 4, 8, 16, 32, 64
@@ -16,9 +16,9 @@ export interface TournamentSettings {
   targetWpm?: number; // For race-to-target
   targetProgress?: number; // For race-to-target (percentage)
   advanceDelay: number; // Delay between rounds in ms (default 10000)
-}
+};
 
-export interface TournamentParticipant {
+export type TournamentParticipant = {
   userId: string;
   username: string;
   seed: number; // Seeding position (1 = highest seed)
@@ -29,42 +29,43 @@ export interface TournamentParticipant {
   matchesPlayed: number;
   connectionId: string;
   isConnected: boolean;
-}
+};
 
-export interface MatchResult {
+export type MatchResult = {
   userId: string;
   wpm: number;
   accuracy: number;
   finishTime?: number; // Duration in ms
   score: number; // Calculated based on win condition
   placement: number; // 1st, 2nd, etc.
-}
+};
 
-export interface Match {
+export type Match = {
   id: string;
   roundNumber: number;
   matchNumber: number; // Position in round (1, 2, 3...)
   bracket: BracketType;
   state: MatchState;
   participants: string[]; // User IDs (2 for 1v1, more for group)
+  readyParticipants?: string[]; // User IDs of participants who clicked "I'm Ready"
   winnerId?: string;
   loserId?: string;
   competitionId?: string; // Links to actual competition session
   startTime?: number;
   endTime?: number;
   results?: Record<string, MatchResult>;
-}
+};
 
-export interface Round {
+export type Round = {
   number: number;
   bracket: BracketType;
   matches: Match[];
   state: 'pending' | 'in-progress' | 'completed';
   startTime?: number;
   endTime?: number;
-}
+};
 
-export interface Tournament {
+export type Tournament = {
   id: string;
   name: string;
   code: string; // Join code like "TOUR-AB12"
@@ -80,7 +81,7 @@ export interface Tournament {
   winnerId?: string;
   runnerUpId?: string;
   thirdPlaceId?: string;
-}
+};
 
 // Client → Server tournament messages
 export type TournamentClientMessage
@@ -88,6 +89,7 @@ export type TournamentClientMessage
     | { type: 'JOIN_TOURNAMENT'; username: string; userId: string }
     | { type: 'LEAVE_TOURNAMENT' }
     | { type: 'START_TOURNAMENT' }
+    | { type: 'UPDATE_CONNECTION'; userId: string }
     | { type: 'READY_FOR_MATCH'; matchId: string }
     | { type: 'MATCH_COMPLETE'; matchId: string; results: MatchResult[] };
 

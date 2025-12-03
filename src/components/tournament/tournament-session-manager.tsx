@@ -1,5 +1,7 @@
 import { useState } from 'react';
+
 import { Icons } from '@/utils/icons';
+
 import { FormActions, FormField, FormSection } from '../common/form-components';
 
 type TournamentSessionManagerProps = {
@@ -17,7 +19,7 @@ export default function TournamentSessionManager({
 
   const handleCreateTournament = () => {
     if (!createUsername.trim()) {
-      alert('Please enter your username');
+      // alert('Please enter your username');
       return;
     }
     onCreateTournament(createUsername.trim());
@@ -25,7 +27,7 @@ export default function TournamentSessionManager({
 
   const handleJoinTournament = () => {
     if (!joinCode.trim() || !joinUsername.trim()) {
-      alert('Please enter both tournament code and username');
+      // alert('Please enter both tournament code and username');
       return;
     }
     onJoinTournament(joinCode.trim().toUpperCase(), joinUsername.trim());

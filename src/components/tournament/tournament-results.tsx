@@ -1,11 +1,12 @@
-import { Trophy, Medal, Award } from 'lucide-react';
+import { Award, Medal, Trophy } from 'lucide-react';
+
 import type { Tournament } from '@/types/tournament.types';
 
-interface TournamentResultsProps {
+type TournamentResultsProps = {
   tournament: Tournament;
   userId: string;
   onBackToHome: () => void;
-}
+};
 
 export function TournamentResults({ tournament, userId, onBackToHome }: TournamentResultsProps) {
   const participants = Object.values(tournament.participants);
@@ -169,7 +170,7 @@ export function TournamentResults({ tournament, userId, onBackToHome }: Tourname
   );
 }
 
-interface PodiumCardProps {
+type PodiumCardProps = {
   participant: {
     username: string;
     wins: number;
@@ -179,7 +180,7 @@ interface PodiumCardProps {
   icon: React.ReactNode;
   isUser: boolean;
   highlight?: boolean;
-}
+};
 
 function PodiumCard({ participant, placement, icon, isUser, highlight }: PodiumCardProps) {
   const placementColors = {

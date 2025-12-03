@@ -20,7 +20,7 @@ export default setemiojo(
       semi: true,
       quotes: 'single',
     },
-    ignores: ['src/routeTree.gen.ts', 'dist', '.claude', '.partykit'],
+    ignores: ['src/routeTree.gen.ts', 'dist', '.claude', '.partykit', 'TOURNAMENT_PLAN.md'],
   },
   {
     rules: {
@@ -42,7 +42,7 @@ export default setemiojo(
         'error',
         {
           case: 'kebabCase',
-          ignore: ['README.md'],
+          ignore: ['README.md', 'TOURNAMENT_PLAN.md'],
         },
       ],
     },

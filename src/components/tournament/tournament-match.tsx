@@ -1,11 +1,13 @@
-import { useEffect, useState, useRef } from 'react';
 import { ArrowLeft, Trophy } from 'lucide-react';
-import type { Match, MatchResult, Tournament } from '@/types/tournament.types';
-import Competition from '@/components/competition/competition';
-import { getRoundName } from '@/utils/tournament-brackets';
-import { useCompetition } from '@/hooks/use-competition';
+import { useEffect, useRef, useState } from 'react';
 
-interface TournamentMatchProps {
+import type { Match, MatchResult, Tournament } from '@/types/tournament.types';
+
+import Competition from '@/components/competition/competition';
+import { useCompetition } from '@/hooks/use-competition';
+import { getRoundName } from '@/utils/tournament-brackets';
+
+type TournamentMatchProps = {
   tournament: Tournament;
   match: Match;
   userId: string;
@@ -13,7 +15,7 @@ interface TournamentMatchProps {
   onMatchComplete: (matchId: string, results: MatchResult[]) => void;
   onReadyForMatch: (matchId: string) => void;
   onBackToBracket: () => void;
-}
+};
 
 export function TournamentMatch({
   tournament,
@@ -24,9 +26,10 @@ export function TournamentMatch({
   onReadyForMatch,
   onBackToBracket,
 }: TournamentMatchProps) {
-  const [isReady, setIsReady] = useState(false);
   const [showCompetition, setShowCompetition] = useState(false);
-  const hasReportedResults = useRef(false);
+
+  // Check if current user is ready based on server state
+  const isReady = match.readyParticipants?.includes(userId) || false;
 
   const round = tournament.rounds.find(r => r.number === match.roundNumber);
   const totalRounds = tournament.rounds.filter(r => r.bracket === match.bracket).length;
@@ -34,18 +37,37 @@ export function TournamentMatch({
   const opponent = match.participants.find(p => p !== userId);
   const opponentData = opponent ? tournament.participants[opponent] : null;
 
+  console.warn('[TournamentMatch] Match state:', {
+    matchId: match.id,
+    state: match.state,
+    readyParticipants: match.readyParticipants,
+    isReady,
+    userId,
+    opponent,
+  });
+
   useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
     // Auto-show competition when match becomes active
     if (match.state === 'active' && match.competitionId) {
-      setShowCompetition(true);
+      timeoutId = setTimeout(() => setShowCompetition(true), 0);
     }
+
+    // Don't hide competition until match is completed
+    // This ensures results can be reported
+    if (match.state === 'completed') {
+      setShowCompetition(false);
+    }
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, [match.state, match.competitionId]);
 
   const handleReady = () => {
-    setIsReady(true);
+    console.warn('[TournamentMatch] handleReady clicked, calling onReadyForMatch');
     onReadyForMatch(match.id);
   };
-
 
   // If match is completed, show results
   if (match.state === 'completed') {
@@ -134,29 +156,17 @@ export function TournamentMatch({
     );
   }
 
-  // If competition is active, show the typing competition
+  // If competition is active, show the typing competition with results monitoring
   if (showCompetition && match.competitionId) {
     return (
-      <div>
-        <div className="bg-purple-50 dark:bg-purple-900/20 px-4 py-3 text-center">
-          <p className="text-sm font-medium text-purple-900 dark:text-purple-300">
-            {roundName}
-            {' '}
-            - Match
-            {' '}
-            {match.matchNumber}
-            {opponentData && ` vs ${opponentData.username}`}
-          </p>
-        </div>
-        <Competition
-          competitionId={match.competitionId}
-          userId={userId}
-          username={username}
-          onLeave={() => {
-            // For tournament matches, we don't want to leave - we'll handle completion separately
-          }}
-        />
-      </div>
+      <TournamentCompetitionWrapper
+        competitionId={match.competitionId}
+        matchId={match.id}
+        userId={userId}
+        username={username}
+        onMatchComplete={onMatchComplete}
+        onBackToBracket={onBackToBracket}
+      />
     );
   }
 
@@ -220,10 +230,30 @@ export function TournamentMatch({
                 : (
                     <div className="rounded-lg bg-green-50 dark:bg-green-900/20 p-4 text-center">
                       <p className="font-medium text-green-800 dark:text-green-300">
-                        You're ready! Waiting for opponent...
+                        You're ready!
+                        {' '}
+                        {match.readyParticipants?.length === match.participants.length
+                          ? 'Match starting...'
+                          : 'Waiting for opponent...'}
                       </p>
                     </div>
                   )}
+
+              {/* Show ready status for both players */}
+              <div className="grid grid-cols-2 gap-4 text-center text-sm">
+                <div>
+                  <div className={`font-medium ${match.readyParticipants?.includes(userId) ? 'text-green-600 dark:text-green-400' : 'text-gray-400 dark:text-gray-600'}`}>
+                    {match.readyParticipants?.includes(userId) ? '✓ Ready' : 'Not Ready'}
+                  </div>
+                  <div className="text-xs text-gray-600 dark:text-gray-400">You</div>
+                </div>
+                <div>
+                  <div className={`font-medium ${opponent && match.readyParticipants?.includes(opponent) ? 'text-green-600 dark:text-green-400' : 'text-gray-400 dark:text-gray-600'}`}>
+                    {opponent && match.readyParticipants?.includes(opponent) ? '✓ Ready' : 'Not Ready'}
+                  </div>
+                  <div className="text-xs text-gray-600 dark:text-gray-400">Opponent</div>
+                </div>
+              </div>
             </>
           )}
 
@@ -237,5 +267,89 @@ export function TournamentMatch({
         </div>
       </div>
     </div>
+  );
+}
+
+// Wrapper component that monitors competition completion and reports results
+function TournamentCompetitionWrapper({
+  competitionId,
+  matchId,
+  userId,
+  username,
+  onMatchComplete,
+  onBackToBracket,
+}: {
+  competitionId: string;
+  matchId: string;
+  userId: string;
+  username: string;
+  onMatchComplete: (matchId: string, results: MatchResult[]) => void;
+  onBackToBracket: () => void;
+}) {
+  const { session, leaderboard } = useCompetition(competitionId, userId);
+  const hasReportedResults = useRef(false);
+
+  // Monitor for competition completion and report results
+  useEffect(() => {
+    console.warn('[TournamentCompetitionWrapper] State check:', {
+      sessionState: session?.state,
+      hasLeaderboard: !!leaderboard,
+      leaderboardLength: leaderboard?.length,
+      hasReported: hasReportedResults.current,
+      matchId,
+    });
+
+    if (session?.state === 'finished' && leaderboard && leaderboard.length > 0 && !hasReportedResults.current) {
+      console.warn('[TournamentCompetitionWrapper] Competition finished, reporting results IMMEDIATELY');
+      hasReportedResults.current = true;
+
+      // Convert leaderboard to match results
+      const results: MatchResult[] = leaderboard.map((entry, index) => ({
+        userId: entry.userId,
+        username: entry.username,
+        wpm: entry.wpm,
+        accuracy: entry.accuracy,
+        completedAt: entry.finishedAt || Date.now(),
+        score: entry.wpm * (entry.accuracy / 100), // Calculate score
+        placement: index + 1,
+      }));
+
+      console.warn('[TournamentCompetitionWrapper] Reporting results:', results);
+
+      // Report immediately
+      onMatchComplete(matchId, results);
+
+      console.warn('[TournamentCompetitionWrapper] Results reported successfully');
+    }
+
+    // Cleanup: ensure results are reported even if component unmounts
+    return () => {
+      if (session?.state === 'finished' && leaderboard && leaderboard.length > 0 && !hasReportedResults.current) {
+        console.warn('[TournamentCompetitionWrapper] Component unmounting, reporting results in cleanup');
+        hasReportedResults.current = true;
+
+        const results: MatchResult[] = leaderboard.map((entry, index) => ({
+          userId: entry.userId,
+          username: entry.username,
+          wpm: entry.wpm,
+          accuracy: entry.accuracy,
+          completedAt: entry.finishedAt || Date.now(),
+          score: entry.wpm * (entry.accuracy / 100),
+          placement: index + 1,
+        }));
+
+        onMatchComplete(matchId, results);
+      }
+    };
+  }, [session?.state, leaderboard, matchId, onMatchComplete]);
+
+  return (
+    <Competition
+      competitionId={competitionId}
+      userId={userId}
+      username={username}
+      tournamentMode
+      onLeave={onBackToBracket}
+    />
   );
 }

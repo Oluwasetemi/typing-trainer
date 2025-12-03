@@ -1,12 +1,14 @@
-import { Trophy, Clock, CheckCircle } from 'lucide-react';
+import { CheckCircle, Clock, Trophy } from 'lucide-react';
+
 import type { Match, Round, Tournament } from '@/types/tournament.types';
+
 import { getRoundName } from '@/utils/tournament-brackets';
 
-interface TournamentBracketProps {
+type TournamentBracketProps = {
   tournament: Tournament;
   userId: string;
   onMatchClick?: (match: Match) => void;
-}
+};
 
 export function TournamentBracket({ tournament, userId, onMatchClick }: TournamentBracketProps) {
   const winnersBracketRounds = tournament.rounds.filter(r => r.bracket === 'winners');
@@ -46,12 +48,12 @@ export function TournamentBracket({ tournament, userId, onMatchClick }: Tourname
   );
 }
 
-interface BracketViewProps {
+type BracketViewProps = {
   rounds: Round[];
   tournament: Tournament;
   userId: string;
   onMatchClick?: (match: Match) => void;
-}
+};
 
 function BracketView({ rounds, tournament, userId, onMatchClick }: BracketViewProps) {
   if (rounds.length === 0) {
@@ -79,19 +81,19 @@ function BracketView({ rounds, tournament, userId, onMatchClick }: BracketViewPr
   );
 }
 
-interface RoundColumnProps {
+type RoundColumnProps = {
   round: Round;
   tournament: Tournament;
   userId: string;
   onMatchClick?: (match: Match) => void;
-}
+};
 
 function RoundColumn({ round, tournament, userId, onMatchClick }: RoundColumnProps) {
   const totalRounds = tournament.rounds.filter(r => r.bracket === round.bracket).length;
   const roundName = getRoundName(round.number, totalRounds);
 
   return (
-    <div className="flex flex-col" style={{ minWidth: '240px' }}>
+    <div className="flex flex-col px-4" style={{ minWidth: '360px' }}>
       {/* Round Header */}
       <div className="mb-4 text-center">
         <div className="text-sm font-medium text-gray-600 dark:text-gray-400">
@@ -120,12 +122,12 @@ function RoundColumn({ round, tournament, userId, onMatchClick }: RoundColumnPro
   );
 }
 
-interface MatchCardProps {
+type MatchCardProps = {
   match: Match;
   tournament: Tournament;
   userId: string;
   onClick?: (match: Match) => void;
-}
+};
 
 function MatchCard({ match, tournament, userId, onClick }: MatchCardProps) {
   const participants = match.participants.map(pid => tournament.participants[pid]).filter(Boolean);
@@ -193,26 +195,35 @@ function MatchCard({ match, tournament, userId, onClick }: MatchCardProps) {
               participants.map((participant) => {
                 const result = match.results?.[participant.userId];
                 const isWinner = match.winnerId === participant.userId;
+                const isLoser = match.state === 'completed' && !isWinner;
 
                 return (
                   <div
                     key={participant.userId}
                     className={`
                   flex items-center justify-between rounded px-2 py-1.5
-                  ${isWinner ? 'bg-green-50 dark:bg-green-900/20' : 'bg-gray-50 dark:bg-zinc-900'}
+                  ${isWinner ? 'bg-green-50 dark:bg-green-900/20 ring-2 ring-green-500' : 'bg-gray-50 dark:bg-zinc-900'}
+                  ${isLoser ? 'opacity-60' : ''}
                 `}
                   >
                     <div className="flex items-center gap-2">
-                      {isWinner && <Trophy className="h-3 w-3 text-yellow-500" />}
-                      <span className={`text-sm font-medium ${isWinner ? 'text-green-900 dark:text-green-300' : 'text-gray-900 dark:text-gray-100'}`}>
+                      {isWinner && <Trophy className="h-4 w-4 text-yellow-500" />}
+                      <span className={`text-sm font-medium ${isWinner ? 'text-green-900 dark:text-green-300 font-bold' : 'text-gray-900 dark:text-gray-100'}`}>
                         {participant.username}
                       </span>
                     </div>
 
                     {result && (
                       <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
-                        <span className="font-semibold">{Math.round(result.wpm)} WPM</span>
-                        <span>{result.accuracy.toFixed(1)}%</span>
+                        <span className={`font-semibold ${isWinner ? 'text-green-700 dark:text-green-400' : ''}`}>
+                          {Math.round(result.wpm)}
+                          {' '}
+                          WPM
+                        </span>
+                        <span>
+                          {result.accuracy.toFixed(1)}
+                          %
+                        </span>
                       </div>
                     )}
                   </div>

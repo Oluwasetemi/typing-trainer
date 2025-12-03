@@ -201,7 +201,6 @@ export default function SessionManager({
                 <Button
                   type="button"
                   onClick={() => setShowShareModal(false)}
-                  outline
                   color="red"
                   className="mt-3 sm:col-start-1 sm:mt-0"
                 >

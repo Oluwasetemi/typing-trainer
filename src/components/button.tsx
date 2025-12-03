@@ -177,6 +177,7 @@ export function Button({
   ref,
   ...props
 }: ButtonProps & { ref?: React.Ref<HTMLElement> }) {
+  const defaultColor = styles.colors[color ?? 'dark/zinc'];
   const classes = clsx(
     className,
     styles.base,
@@ -184,7 +185,7 @@ export function Button({
       ? styles.outline
       : plain
         ? styles.plain
-        : clsx(styles.solid, styles.colors[color ?? 'dark/zinc']),
+        : clsx(styles.solid, defaultColor),
   );
 
   return 'href' in props

@@ -1,14 +1,15 @@
-import { Users, Copy, Check, Clock, Trophy } from 'lucide-react';
+import { Check, Clock, Copy, Trophy, Users } from 'lucide-react';
 import { useState } from 'react';
+
 import type { Tournament } from '@/types/tournament.types';
 
-interface TournamentLobbyProps {
+type TournamentLobbyProps = {
   tournament: Tournament;
   userId: string;
   isHost: boolean;
   onStartTournament: () => void;
   onLeaveTournament: () => void;
-}
+};
 
 export function TournamentLobby({
   tournament,
@@ -29,6 +30,7 @@ export function TournamentLobby({
       await navigator.clipboard.writeText(tournament.code);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+      // display the toast
     }
     catch (error) {
       console.error('Failed to copy join code:', error);

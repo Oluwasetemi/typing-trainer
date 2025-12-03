@@ -1,9 +1,11 @@
 # Tournament Mode Implementation Plan
 
 ## Overview
+
 Add a tournament-style competition mode to the typing application, allowing users to create and participate in structured multi-round competitions with bracket progression.
 
 ## User Requirements
+
 - **Tournament Formats**: Single Elimination, Double Elimination, Round Robin, Swiss System (user selectable)
 - **Win Conditions**: Multiple options (Fastest Completion, Highest WPM, Best Score, Race to Target) - user selectable
 - **Progression**: Automatic advancement with winners moving to next round
@@ -12,6 +14,7 @@ Add a tournament-style competition mode to the typing application, allowing user
 ## Current Architecture Analysis
 
 ### Existing Competition System
+
 - **Structure**: WebSocket-based real-time competition using PartyKit
 - **Flow**: Create → Join → Waiting Room → Countdown → Active → Results
 - **Server**: `party/competition-server.ts` - handles participant management, state, leaderboard
@@ -24,6 +27,7 @@ Add a tournament-style competition mode to the typing application, allowing user
   - `live-leaderboard.tsx` - Real-time standings
 
 ### Current Limitations for Tournaments
+
 - Single-round only (no bracket progression)
 - No match/round structure
 - No tournament-level state management
@@ -49,7 +53,7 @@ export type MatchState = 'pending' | 'ready' | 'countdown' | 'active' | 'complet
 
 export type BracketType = 'winners' | 'losers'; // For double elimination
 
-export interface TournamentSettings {
+export type TournamentSettings = {
   format: TournamentFormat;
   winCondition: WinCondition;
   size: number; // 4, 8, 16, 32, 64
@@ -57,9 +61,9 @@ export interface TournamentSettings {
   targetWpm?: number; // For race-to-target
   targetProgress?: number; // For race-to-target (percentage)
   advanceDelay: number; // Delay between rounds in ms (default 10000)
-}
+};
 
-export interface TournamentParticipant {
+export type TournamentParticipant = {
   userId: string;
   username: string;
   seed: number; // Seeding position (1 = highest seed)
@@ -68,9 +72,9 @@ export interface TournamentParticipant {
   wins: number;
   losses: number;
   matchesPlayed: number;
-}
+};
 
-export interface Match {
+export type Match = {
   id: string;
   roundNumber: number;
   matchNumber: number; // Position in round (1, 2, 3...)
@@ -82,27 +86,27 @@ export interface Match {
   startTime?: number;
   endTime?: number;
   results?: Record<string, MatchResult>;
-}
+};
 
-export interface MatchResult {
+export type MatchResult = {
   userId: string;
   wpm: number;
   accuracy: number;
   finishTime?: number; // Duration in ms
   score: number; // Calculated based on win condition
   placement: number; // 1st, 2nd, etc.
-}
+};
 
-export interface Round {
+export type Round = {
   number: number;
   bracket: BracketType;
   matches: Match[];
   state: 'pending' | 'in-progress' | 'completed';
   startTime?: number;
   endTime?: number;
-}
+};
 
-export interface Tournament {
+export type Tournament = {
   id: string;
   name: string;
   code: string; // Join code like "TOUR-AB12"
@@ -118,34 +122,34 @@ export interface Tournament {
   winnerId?: string;
   runnerUpId?: string;
   thirdPlaceId?: string;
-}
+};
 ```
 
 #### Message Types (extend `competition.types.ts`)
 
 ```typescript
 // Client → Server tournament messages
-export type TournamentClientMessage =
-  | { type: 'CREATE_TOURNAMENT'; settings: TournamentSettings; name: string; hostUsername: string }
-  | { type: 'JOIN_TOURNAMENT'; username: string; userId: string }
-  | { type: 'LEAVE_TOURNAMENT' }
-  | { type: 'START_TOURNAMENT' } // Host only
-  | { type: 'READY_FOR_MATCH'; matchId: string }
-  | { type: 'MATCH_COMPLETE'; matchId: string; results: MatchResult[] };
+export type TournamentClientMessage
+  = | { type: 'CREATE_TOURNAMENT'; settings: TournamentSettings; name: string; hostUsername: string }
+    | { type: 'JOIN_TOURNAMENT'; username: string; userId: string }
+    | { type: 'LEAVE_TOURNAMENT' }
+    | { type: 'START_TOURNAMENT' } // Host only
+    | { type: 'READY_FOR_MATCH'; matchId: string }
+    | { type: 'MATCH_COMPLETE'; matchId: string; results: MatchResult[] };
 
 // Server → Client tournament messages
-export type TournamentServerMessage =
-  | { type: 'TOURNAMENT_STATE'; tournament: Tournament }
-  | { type: 'PARTICIPANT_JOINED'; participant: TournamentParticipant }
-  | { type: 'PARTICIPANT_LEFT'; userId: string }
-  | { type: 'TOURNAMENT_STARTED'; tournament: Tournament }
-  | { type: 'ROUND_STARTED'; round: Round }
-  | { type: 'MATCH_READY'; match: Match }
-  | { type: 'MATCH_STARTED'; matchId: string }
-  | { type: 'MATCH_COMPLETED'; matchId: string; results: MatchResult[] }
-  | { type: 'ROUND_COMPLETED'; roundNumber: number }
-  | { type: 'TOURNAMENT_COMPLETED'; tournament: Tournament }
-  | { type: 'ERROR'; message: string };
+export type TournamentServerMessage
+  = | { type: 'TOURNAMENT_STATE'; tournament: Tournament }
+    | { type: 'PARTICIPANT_JOINED'; participant: TournamentParticipant }
+    | { type: 'PARTICIPANT_LEFT'; userId: string }
+    | { type: 'TOURNAMENT_STARTED'; tournament: Tournament }
+    | { type: 'ROUND_STARTED'; round: Round }
+    | { type: 'MATCH_READY'; match: Match }
+    | { type: 'MATCH_STARTED'; matchId: string }
+    | { type: 'MATCH_COMPLETED'; matchId: string; results: MatchResult[] }
+    | { type: 'ROUND_COMPLETED'; roundNumber: number }
+    | { type: 'TOURNAMENT_COMPLETED'; tournament: Tournament }
+    | { type: 'ERROR'; message: string };
 ```
 
 ### 2. Bracket Generation Logic (`src/utils/tournament-brackets.ts`)
@@ -171,7 +175,7 @@ export function generateSingleEliminationBracket(
 
   // Subsequent rounds: Create placeholder matches
   for (let i = 2; i <= totalRounds; i++) {
-    const matchCount = Math.pow(2, totalRounds - i);
+    const matchCount = 2 ** (totalRounds - i);
     const roundMatches: Match[] = [];
 
     for (let j = 0; j < matchCount; j++) {
@@ -246,7 +250,8 @@ export function generateSwissSystemPairings(
 ): Match[] {
   // Pair participants with similar W-L records
   const sorted = [...participants].sort((a, b) => {
-    if (b.wins !== a.wins) return b.wins - a.wins;
+    if (b.wins !== a.wins)
+      return b.wins - a.wins;
     return a.losses - b.losses;
   });
 
@@ -325,20 +330,22 @@ function calculateScore(result: MatchResult, condition: WinCondition): number {
 
 ```typescript
 import type * as Party from 'partykit/server';
+
 import type {
+  Match,
+  MatchResult,
+  Round,
   Tournament,
   TournamentClientMessage,
   TournamentServerMessage,
-  Match,
-  Round,
-  MatchResult,
 } from '@/types/tournament.types';
+
 import {
-  generateSingleEliminationBracket,
+  determineMatchWinner,
   generateDoubleEliminationBracket,
   generateRoundRobinGroups,
+  generateSingleEliminationBracket,
   generateSwissSystemPairings,
-  determineMatchWinner,
 } from '@/utils/tournament-brackets';
 
 export default class TournamentServer implements Party.Server {
@@ -416,7 +423,8 @@ export default class TournamentServer implements Party.Server {
     msg: { username: string; userId: string },
     sender: Party.Connection
   ) {
-    if (!this.tournament) return;
+    if (!this.tournament)
+      return;
 
     if (this.tournament.state !== 'registration') {
       this.sendError(sender, 'Tournament has already started');
@@ -444,7 +452,8 @@ export default class TournamentServer implements Party.Server {
   }
 
   private async handleStartTournament(sender: Party.Connection) {
-    if (!this.tournament) return;
+    if (!this.tournament)
+      return;
 
     if (sender.id !== this.tournament.hostUserId) {
       this.sendError(sender, 'Only the host can start the tournament');
@@ -501,10 +510,12 @@ export default class TournamentServer implements Party.Server {
   }
 
   private async startRound(roundNumber: number) {
-    if (!this.tournament) return;
+    if (!this.tournament)
+      return;
 
     const round = this.tournament.rounds[roundNumber - 1];
-    if (!round) return;
+    if (!round)
+      return;
 
     // For Swiss, generate pairings dynamically
     if (this.tournament.settings.format === 'swiss-system' && round.matches.length === 0) {
@@ -551,15 +562,17 @@ export default class TournamentServer implements Party.Server {
     msg: { matchId: string; results: MatchResult[] },
     sender: Party.Connection
   ) {
-    if (!this.tournament) return;
+    if (!this.tournament)
+      return;
 
     const match = this.findMatch(msg.matchId);
-    if (!match) return;
+    if (!match)
+      return;
 
     match.state = 'completed';
     match.endTime = Date.now();
     match.results = {};
-    msg.results.forEach(r => {
+    msg.results.forEach((r) => {
       match.results![r.userId] = r;
     });
 
@@ -568,13 +581,14 @@ export default class TournamentServer implements Party.Server {
     match.winnerId = winnerId;
 
     // Update participant records
-    msg.results.forEach(result => {
+    msg.results.forEach((result) => {
       const participant = this.tournament!.participants[result.userId];
       if (participant) {
         participant.matchesPlayed++;
         if (result.userId === winnerId) {
           participant.wins++;
-        } else {
+        }
+        else {
           participant.losses++;
           if (this.tournament!.settings.format === 'single-elimination') {
             participant.isEliminated = true;
@@ -596,10 +610,12 @@ export default class TournamentServer implements Party.Server {
   }
 
   private async checkRoundCompletion(roundNumber: number) {
-    if (!this.tournament) return;
+    if (!this.tournament)
+      return;
 
     const round = this.tournament.rounds[roundNumber - 1];
-    if (!round) return;
+    if (!round)
+      return;
 
     const allMatchesComplete = round.matches.every(m => m.state === 'completed');
 
@@ -620,7 +636,8 @@ export default class TournamentServer implements Party.Server {
       // Check if tournament is complete
       if (this.isTournamentComplete()) {
         await this.completeTournament();
-      } else {
+      }
+      else {
         // Start next round after delay
         setTimeout(() => {
           this.startRound(roundNumber + 1);
@@ -632,12 +649,14 @@ export default class TournamentServer implements Party.Server {
   }
 
   private async advanceWinners(roundNumber: number) {
-    if (!this.tournament) return;
+    if (!this.tournament)
+      return;
 
     const currentRound = this.tournament.rounds[roundNumber - 1];
     const nextRound = this.tournament.rounds[roundNumber];
 
-    if (!nextRound) return;
+    if (!nextRound)
+      return;
 
     currentRound.matches.forEach((match, index) => {
       if (match.winnerId) {
@@ -652,10 +671,12 @@ export default class TournamentServer implements Party.Server {
   }
 
   private isTournamentComplete(): boolean {
-    if (!this.tournament) return false;
+    if (!this.tournament)
+      return false;
 
     const lastRound = this.tournament.rounds[this.tournament.rounds.length - 1];
-    if (!lastRound || lastRound.state !== 'completed') return false;
+    if (!lastRound || lastRound.state !== 'completed')
+      return false;
 
     // For elimination: Check if finals are complete
     if (this.tournament.settings.format.includes('elimination')) {
@@ -667,7 +688,8 @@ export default class TournamentServer implements Party.Server {
   }
 
   private async completeTournament() {
-    if (!this.tournament) return;
+    if (!this.tournament)
+      return;
 
     this.tournament.state = 'completed';
     this.tournament.completedAt = Date.now();
@@ -692,11 +714,13 @@ export default class TournamentServer implements Party.Server {
   }
 
   private findMatch(matchId: string): Match | null {
-    if (!this.tournament) return null;
+    if (!this.tournament)
+      return null;
 
     for (const round of this.tournament.rounds) {
       const match = round.matches.find(m => m.id === matchId);
-      if (match) return match;
+      if (match)
+        return match;
     }
     return null;
   }
@@ -739,6 +763,7 @@ function generateTournamentCode(): string {
 ```typescript
 import PartySocket from 'partysocket';
 import { useCallback, useEffect, useRef, useState } from 'react';
+
 import type {
   Tournament,
   TournamentClientMessage,
@@ -753,7 +778,8 @@ export function useTournament(tournamentId: string, userId: string) {
   const socketRef = useRef<PartySocket | null>(null);
 
   useEffect(() => {
-    if (!tournamentId) return;
+    if (!tournamentId)
+      return;
 
     const protocol = import.meta.env.DEV ? 'ws' : 'wss';
     const host = import.meta.env.DEV ? 'localhost:1999' : 'typing-trainer.oluwasetemi.partykit.dev';
@@ -782,28 +808,33 @@ export function useTournament(tournamentId: string, userId: string) {
           break;
         case 'PARTICIPANT_JOINED':
           // Update participants
-          setTournament(prev => prev ? {
-            ...prev,
-            participants: {
-              ...prev.participants,
-              [message.participant.userId]: message.participant,
-            },
-          } : null);
+          setTournament(prev => prev
+            ? {
+                ...prev,
+                participants: {
+                  ...prev.participants,
+                  [message.participant.userId]: message.participant,
+                },
+              }
+            : null);
           break;
         case 'ROUND_STARTED':
           // Update current round
-          setTournament(prev => prev ? {
-            ...prev,
-            currentRound: message.round.number,
-            rounds: prev.rounds.map(r =>
-              r.number === message.round.number ? message.round : r
-            ),
-          } : null);
+          setTournament(prev => prev
+            ? {
+                ...prev,
+                currentRound: message.round.number,
+                rounds: prev.rounds.map(r =>
+                  r.number === message.round.number ? message.round : r
+                ),
+              }
+            : null);
           break;
         case 'MATCH_COMPLETED':
           // Update match results
-          setTournament(prev => {
-            if (!prev) return null;
+          setTournament((prev) => {
+            if (!prev)
+              return null;
             return {
               ...prev,
               rounds: prev.rounds.map(round => ({
@@ -872,8 +903,10 @@ export function useTournament(tournamentId: string, userId: string) {
 
 ```tsx
 import { useState } from 'react';
+
 import type { TournamentSettings } from '@/types/tournament.types';
-import { FormField, FormSection, FormActions } from '../common/form-components';
+
+import { FormActions, FormField, FormSection } from '../common/form-components';
 import { Select } from '../select';
 
 export function TournamentCreator({ onCreate }: { onCreate: (settings: TournamentSettings, name: string) => void }) {
@@ -920,7 +953,7 @@ export function TournamentCreator({ onCreate }: { onCreate: (settings: Tournamen
           <label className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
             Tournament Format
           </label>
-          <Select value={format} onChange={(e) => setFormat(e.target.value as any)}>
+          <Select value={format} onChange={e => setFormat(e.target.value as any)}>
             <option value="single-elimination">Single Elimination</option>
             <option value="double-elimination">Double Elimination</option>
             <option value="round-robin">Round Robin</option>
@@ -935,7 +968,7 @@ export function TournamentCreator({ onCreate }: { onCreate: (settings: Tournamen
           <label className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
             Win Condition
           </label>
-          <Select value={winCondition} onChange={(e) => setWinCondition(e.target.value as any)}>
+          <Select value={winCondition} onChange={e => setWinCondition(e.target.value as any)}>
             <option value="fastest-completion">Fastest Completion</option>
             <option value="highest-wpm">Highest WPM</option>
             <option value="best-score">Best Score (WPM × Accuracy)</option>
@@ -947,7 +980,7 @@ export function TournamentCreator({ onCreate }: { onCreate: (settings: Tournamen
           <label className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">
             Tournament Size
           </label>
-          <Select value={size} onChange={(e) => setSize(Number(e.target.value))}>
+          <Select value={size} onChange={e => setSize(Number(e.target.value))}>
             <option value={4}>4 Players</option>
             <option value={8}>8 Players</option>
             <option value={16}>16 Players</option>
@@ -985,7 +1018,7 @@ function getFormatDescription(format: string): string {
 #### Tournament Bracket View (`src/components/tournament/tournament-bracket.tsx`)
 
 ```tsx
-import type { Tournament, Match } from '@/types/tournament.types';
+import type { Match, Tournament } from '@/types/tournament.types';
 
 export function TournamentBracket({ tournament }: { tournament: Tournament }) {
   if (tournament.settings.format === 'round-robin' || tournament.settings.format === 'swiss-system') {
@@ -1019,7 +1052,7 @@ function BracketTreeView({ tournament }: { tournament: Tournament }) {
 function MatchCard({ match, tournament }: { match: Match; tournament: Tournament }) {
   return (
     <div className="bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded p-2">
-      {match.participants.map(userId => {
+      {match.participants.map((userId) => {
         const participant = tournament.participants[userId];
         const isWinner = match.winnerId === userId;
 
@@ -1031,7 +1064,9 @@ function MatchCard({ match, tournament }: { match: Match; tournament: Tournament
             {participant?.username || 'TBD'}
             {match.results?.[userId] && (
               <span className="ml-2 text-xs">
-                {Math.round(match.results[userId].wpm)} WPM
+                {Math.round(match.results[userId].wpm)}
+                {' '}
+                WPM
               </span>
             )}
           </div>
@@ -1047,9 +1082,12 @@ function MatchCard({ match, tournament }: { match: Match; tournament: Tournament
 function getRoundName(roundNumber: number, totalRounds: number): string {
   const roundsFromEnd = totalRounds - roundNumber;
 
-  if (roundsFromEnd === 0) return 'Finals';
-  if (roundsFromEnd === 1) return 'Semi-Finals';
-  if (roundsFromEnd === 2) return 'Quarter-Finals';
+  if (roundsFromEnd === 0)
+    return 'Finals';
+  if (roundsFromEnd === 1)
+    return 'Semi-Finals';
+  if (roundsFromEnd === 2)
+    return 'Quarter-Finals';
 
   return `Round ${roundNumber}`;
 }
@@ -1059,7 +1097,10 @@ function RoundListView({ tournament }: { tournament: Tournament }) {
     <div className="space-y-6">
       {tournament.rounds.map(round => (
         <div key={round.number} className="bg-white dark:bg-zinc-900 rounded-lg p-4">
-          <h3 className="text-lg font-semibold mb-4">Round {round.number}</h3>
+          <h3 className="text-lg font-semibold mb-4">
+            Round
+            {round.number}
+          </h3>
           <div className="grid gap-4 md:grid-cols-2">
             {round.matches.map(match => (
               <MatchCard key={match.id} match={match} tournament={tournament} />
@@ -1092,31 +1133,37 @@ function RoundListView({ tournament }: { tournament: Tournament }) {
 ## Implementation Steps
 
 ### Phase 1: Foundation (Types & Utilities)
+
 1. Create `src/types/tournament.types.ts` with all tournament interfaces
 2. Create `src/utils/tournament-brackets.ts` with bracket generation logic
 3. Add tournament types to existing `competition.types.ts` exports
 
 ### Phase 2: Server Implementation
+
 4. Create `party/tournament-server.ts` with full tournament management
 5. Update `partykit.json` to register tournament party
 6. Test bracket generation for all formats
 
 ### Phase 3: Client Hook
+
 7. Create `src/hooks/use-tournament.ts` for WebSocket connection
 8. Handle all tournament messages and state updates
 
 ### Phase 4: UI Components
+
 9. Create tournament creator component with format selection
 10. Create tournament lobby/registration component
 11. Create bracket visualization component
 12. Create tournament results component
 
 ### Phase 5: Integration
+
 13. Add tournament route to router
 14. Integrate matches with existing competition system
 15. Add tournament option to competition mode selector
 
 ### Phase 6: Testing & Polish
+
 16. Test all tournament formats with 4, 8, 16 participants
 17. Test automatic progression between rounds
 18. Add loading states and error handling

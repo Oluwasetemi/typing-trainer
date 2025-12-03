@@ -11,6 +11,7 @@ type CompetitionProps = {
   userId: string;
   username: string;
   onLeave: () => void;
+  tournamentMode?: boolean;
 };
 
 export default function Competition({
@@ -18,6 +19,7 @@ export default function Competition({
   userId,
   username,
   onLeave,
+  tournamentMode = false,
 }: CompetitionProps) {
   const {
     session,
@@ -128,6 +130,7 @@ export default function Competition({
           competitionName={session.name}
           onRaceAgain={handleRaceAgain}
           onNewCompetition={handleLeave}
+          tournamentMode={tournamentMode}
         />
       )}
     </>
