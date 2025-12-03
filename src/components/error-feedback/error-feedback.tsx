@@ -32,11 +32,11 @@ export default function ErrorFeedback() {
   }
 
   return (
-    <details className="w-full bg-red-50 border-2 border-red-200 rounded-lg p-4">
+    <details className="w-full bg-red-50 dark:bg-red-950/30 border-2 border-red-200 dark:border-red-800 rounded-lg p-4">
       <summary className="flex items-center gap-3 cursor-pointer list-none">
         <div className="flex-shrink-0">
           <svg
-            className="w-5 h-5 text-red-600"
+            className="w-5 h-5 text-red-600 dark:text-red-400"
             fill="currentColor"
             viewBox="0 0 20 20"
           >
@@ -47,29 +47,29 @@ export default function ErrorFeedback() {
             />
           </svg>
         </div>
-        <span className="text-sm font-semibold text-red-800">
+        <span className="text-sm font-semibold text-red-800 dark:text-red-300">
           Display Errors (
           {errorDetails.length}
           )
         </span>
       </summary>
       <div className="mt-3 ml-8">
-        <div className="text-sm bg-white rounded px-3 py-2 border border-red-100 flex items-center gap-2 flex-wrap">
+        <div className="text-sm bg-white dark:bg-zinc-900 rounded px-3 py-2 border border-red-100 dark:border-red-900 flex items-center gap-2 flex-wrap">
           {errorDetails.map(({ wordIndex, expectedWord, typedWord }) => (
             <span
               key={wordIndex}
               className="inline-flex items-center gap-2"
             >
-              <span className="text-gray-600 font-medium">
+              <span className="text-gray-600 dark:text-gray-400 font-medium">
                 Word
                 {wordIndex + 1}
                 :
               </span>
-              <span className="line-through text-red-600 font-mono bg-red-100 px-2 py-0.5 rounded">
+              <span className="line-through text-red-600 dark:text-red-400 font-mono bg-red-100 dark:bg-red-950/50 px-2 py-0.5 rounded">
                 {typedWord}
               </span>
-              <span className="text-gray-400">→</span>
-              <span className="text-green-700 font-mono bg-green-100 px-2 py-0.5 rounded">
+              <span className="text-gray-400 dark:text-gray-500">→</span>
+              <span className="text-green-700 dark:text-green-400 font-mono bg-green-100 dark:bg-green-950/50 px-2 py-0.5 rounded">
                 {expectedWord}
               </span>
             </span>

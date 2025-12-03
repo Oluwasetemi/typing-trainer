@@ -196,8 +196,8 @@ export default function KeyboardDisplay({
               key={char}
               className={`absolute w-11 h-10 rounded-lg border flex items-center justify-center text-sm font-mono transition-all duration-200 ${
                 isActive
-                  ? 'bg-white/50 border-blue-400 text-black scale-110 shadow-lg shadow-blue-500/50'
-                  : 'bg-black border-neutral-700 text-white'
+                  ? 'bg-blue-100 dark:bg-blue-900/50 border-blue-400 dark:border-blue-500 text-blue-900 dark:text-blue-100 scale-110 shadow-lg shadow-blue-500/50'
+                  : 'bg-gray-100 dark:bg-zinc-800 border-gray-300 dark:border-zinc-600 text-gray-800 dark:text-gray-200'
               }`}
               style={{
                 left: `${pos.x * 46}px`,

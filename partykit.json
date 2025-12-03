@@ -3,7 +3,8 @@
   "main": "party/typing-server.ts",
   "parties": {
     "typing": "party/typing-server.ts",
-    "competition": "party/competition-server.ts"
+    "competition": "party/competition-server.ts",
+    "tournament": "party/tournament-server.ts"
   },
   "compatibilityDate": "2025-09-26"
 }

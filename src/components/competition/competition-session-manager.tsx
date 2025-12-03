@@ -37,20 +37,20 @@ export default function CompetitionSessionManager({
   };
 
   return (
-    <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-6">
+    <div className="max-w-2xl mx-auto bg-white dark:bg-zinc-900 rounded-lg shadow-lg p-6">
       <header className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-2 flex items-center justify-center gap-2">
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2 flex items-center justify-center gap-2">
           <Icons.Flag size={32} />
           Competition Mode
         </h1>
-        <p className="text-gray-600">
+        <p className="text-gray-600 dark:text-gray-400">
           Race against friends in real-time typing competitions
         </p>
       </header>
 
       <div className="space-y-6">
         {/* Create Competition */}
-        <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-6 rounded-lg border border-purple-200">
+        <div className="bg-linear-to-r from-purple-50 to-blue-50 dark:from-purple-950/20 dark:to-blue-950/20 p-6 rounded-lg border border-purple-200 dark:border-purple-800">
           <FormSection
             title="Create Competition"
             description="Start a new competition and invite others to race"
@@ -90,7 +90,7 @@ export default function CompetitionSessionManager({
         </div>
 
         {/* Join Competition */}
-        <div className="bg-gradient-to-r from-green-50 to-teal-50 p-6 rounded-lg border border-green-200">
+        <div className="bg-linear-to-r from-green-50 to-teal-50 dark:from-green-950/20 dark:to-teal-950/20 p-6 rounded-lg border border-green-200 dark:border-green-800">
           <FormSection
             title="Join Competition"
             description="Enter a competition code to join an existing race"

@@ -9,8 +9,8 @@ export default function StatsPanel() {
   const stats = useTypingStats();
 
   return (
-    <div className="bg-white p-6 rounded-lg border">
-      <h2 className="text-xl font-semibold mb-4 text-gray-800 flex items-center gap-2">
+    <div className="bg-white dark:bg-zinc-900 p-6 rounded-lg border border-gray-200 dark:border-zinc-700">
+      <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100 flex items-center gap-2">
         <Icons.Stats size={24} />
         Statistics
       </h2>
@@ -73,12 +73,12 @@ export default function StatsPanel() {
 
       {/* Performance feedback */}
       {state.finished && (
-        <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-          <h3 className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
+        <div className="mt-6 p-4 bg-gray-50 dark:bg-zinc-800 rounded-lg">
+          <h3 className="font-semibold text-gray-800 dark:text-gray-100 mb-2 flex items-center gap-2">
             <Icons.Stats size={20} />
             Performance
           </h3>
-          <div className="text-sm text-gray-600 space-y-1">
+          <div className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
             {stats.wpm >= 40 && (
               <p className="text-green-600 flex items-center gap-2">
                 <Icons.Rocket size={16} />

@@ -148,3 +148,6 @@ dev-dist
 .claude
 .playwright-mcp
 .vercel
+
+# Local Netlify folder
+.netlify

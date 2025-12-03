@@ -13,7 +13,7 @@ export type TypingStats = {
 
 export function useTypingStats(): TypingStats {
   const { state } = useTyping();
-  const [currentTime, setCurrentTime] = useState(Date.now());
+  const [currentTime, setCurrentTime] = useState(() => Date.now());
 
   // Update current time every 100ms for smooth elapsed time updates
   useEffect(

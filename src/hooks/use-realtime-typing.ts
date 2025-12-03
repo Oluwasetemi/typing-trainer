@@ -103,16 +103,18 @@ export function useRealtimeTyping(options: UseRealtimeTypingOptions) {
         },
       });
 
-      socket.addEventListener('open', () => {
+      const handleServerOpening = () => {
         console.log('PartyKit connection established successfully');
         setRealtimeState(prev => ({
           ...prev,
           isConnected: true,
           connectionError: null,
         }));
-      });
+      };
 
-      socket.addEventListener('message', (event) => {
+      socket.addEventListener('open', handleServerOpening);
+
+      const handleServerMessaging = (event: MessageEvent) => {
         try {
           const typingEvent: TypingEvent = JSON.parse(event.data);
 
@@ -174,7 +176,9 @@ export function useRealtimeTyping(options: UseRealtimeTypingOptions) {
         catch (error) {
           console.error('Error parsing message:', error);
         }
-      });
+      };
+
+      socket.addEventListener('message', handleServerMessaging);
 
       socket.addEventListener('error', (error) => {
         console.error('WebSocket error:', error);
@@ -186,7 +190,7 @@ export function useRealtimeTyping(options: UseRealtimeTypingOptions) {
         retryConnection();
       });
 
-      socket.addEventListener('close', (event) => {
+      const handleServerClosing = (event: CloseEvent) => {
         console.log('WebSocket closed:', event.code, event.reason);
         setRealtimeState(prev => ({
           ...prev,
@@ -198,7 +202,9 @@ export function useRealtimeTyping(options: UseRealtimeTypingOptions) {
         if (event.code !== 1000) {
           retryConnection();
         }
-      });
+      };
+
+      socket.addEventListener('close', handleServerClosing);
 
       socketRef.current = socket;
     }
@@ -209,7 +215,7 @@ export function useRealtimeTyping(options: UseRealtimeTypingOptions) {
         connectionError: 'Failed to create connection',
       }));
     }
-  }, [enabled, host, roomId, role, userId, sessionName, isTypist]);
+  }, [enabled, host, roomId, role, userId, sessionName, isTypist, retryConnection]);
 
   const disconnect = useCallback(() => {
     if (retryTimeoutRef.current) {

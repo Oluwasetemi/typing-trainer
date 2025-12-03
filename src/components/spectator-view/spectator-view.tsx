@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import { TypingContext } from '../../context/typing-context';
 import { useRealtimeTyping } from '../../hooks/use-realtime-typing';
@@ -84,6 +84,19 @@ function SpectatorViewContent({
   isConnected,
   connectionError,
 }: SpectatorViewContentProps) {
+  // Use state for current time to trigger recalculation
+  const [currentTime, setCurrentTime] = useState(() => Date.now());
+
+  // Update current time for active sessions
+  useEffect(() => {
+    if (realtimeState.startTime && !realtimeState.finished) {
+      const interval = setInterval(() => {
+        setCurrentTime(Date.now());
+      }, 100);
+      return () => clearInterval(interval);
+    }
+  }, [realtimeState.startTime, realtimeState.finished]);
+
   // Calculate stats directly from realtime state (no context dependency)
   const stats = useMemo(
     function calculateStats() {
@@ -96,7 +109,7 @@ function SpectatorViewContent({
         }
         else {
           // For active tests, calculate current elapsed time
-          elapsedTime = Date.now() - realtimeState.startTime;
+          elapsedTime = currentTime - realtimeState.startTime;
         }
       }
 
@@ -111,7 +124,7 @@ function SpectatorViewContent({
         charactersTyped: realtimeState.currentIndex,
       };
     },
-    [realtimeState],
+    [realtimeState, currentTime],
   );
 
   if (connectionError) {
@@ -262,7 +275,7 @@ function SpectatorViewContent({
   }
 
   return (
-    <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
+    <div className="max-w-4xl mx-auto bg-white dark:bg-zinc-900 rounded-lg shadow-lg p-6">
       {/* Header */}
       <header className="text-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800 mb-2 flex items-center justify-center gap-2">
@@ -332,7 +345,7 @@ function SpectatorViewContent({
         <div className="mb-6">
           <details className="w-full bg-red-50 border-2 border-red-200 rounded-lg p-4">
             <summary className="flex items-center gap-3 cursor-pointer list-none">
-              <div className="flex-shrink-0">
+              <div className="shrink-0">
                 <svg
                   className="w-5 h-5 text-red-600"
                   fill="currentColor"

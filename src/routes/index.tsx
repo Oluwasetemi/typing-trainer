@@ -41,12 +41,15 @@ function HomePage() {
     }
   }, [session, role, navigate]);
 
-  const handleSelectMode = (mode: 'session' | 'solo' | 'competition') => {
+  const handleSelectMode = (mode: 'session' | 'solo' | 'competition' | 'tournament') => {
     if (mode === 'solo') {
       navigate({ to: '/solo' });
     }
     else if (mode === 'competition') {
       navigate({ to: '/competition' });
+    }
+    else if (mode === 'tournament') {
+      navigate({ to: '/tournament' });
     }
     else if (mode === 'session') {
       navigate({ to: '/session' });

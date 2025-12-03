@@ -116,11 +116,11 @@ export default function TypingInput() {
       {/* Visual typing area */}
       <div
         className={`
-          min-h-[100px] p-4 border-2 rounded-lg bg-white cursor-text
+          min-h-[100px] p-4 border-2 rounded-lg bg-white dark:bg-zinc-800 cursor-text
           ${
     state.finished
-      ? 'border-green-400 bg-green-50'
-      : 'border-gray-300 focus-within:border-blue-400'
+      ? 'border-green-400 dark:border-green-500 bg-green-50 dark:bg-green-900/20'
+      : 'border-gray-300 dark:border-zinc-600 focus-within:border-blue-400 dark:focus-within:border-blue-500'
     }
           transition-colors
         `}
@@ -129,7 +129,7 @@ export default function TypingInput() {
         aria-label="Click here to start typing"
       >
         {!state.startTime && !state.finished && (
-          <div className="text-center text-gray-500 py-8">
+          <div className="text-center text-gray-500 dark:text-gray-400 py-8">
             <p className="text-lg mb-2">👆 Click here and start typing!</p>
             <p className="text-sm mb-6">
               The text above will be highlighted as you type.
@@ -141,7 +141,7 @@ export default function TypingInput() {
         )}
 
         {state.startTime && !state.finished && (
-          <div className="text-center text-gray-600 py-8">
+          <div className="text-center text-gray-600 dark:text-gray-400 py-8">
             <p className="text-lg mb-2">⌨️ Keep typing...</p>
             <p className="text-sm mb-6">Your progress is being tracked above.</p>
             <KeyboardDisplay
@@ -151,7 +151,7 @@ export default function TypingInput() {
         )}
 
         {state.finished && (
-          <div className="text-center text-green-700 py-8">
+          <div className="text-center text-green-700 dark:text-green-400 py-8">
             <p className="text-xl mb-2">🎉 Great job!</p>
             <p className="text-sm mb-4">
               You've completed the typing test. Check your stats!
@@ -174,7 +174,7 @@ export default function TypingInput() {
           <button
             type="button"
             onClick={handleReset}
-            className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
+            className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-700 rounded focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
             aria-label="Reset and start over with new text"
           >
             Reset & Get New Text

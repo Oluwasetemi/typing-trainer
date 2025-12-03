@@ -36,11 +36,11 @@ export function FormSection({
   return (
     <div className={classNames('pb-8', className || '')}>
       <div className="mb-6">
-        <h2 className="text-base/7 font-semibold text-gray-900">
+        <h2 className="text-base/7 font-semibold text-gray-900 dark:text-gray-100">
           {title}
         </h2>
         {description && (
-          <p className="mt-1 text-sm/6 text-gray-600">
+          <p className="mt-1 text-sm/6 text-gray-600 dark:text-gray-400">
             {description}
           </p>
         )}
@@ -58,7 +58,7 @@ type FormFieldProps = {
   id: string;
   type?: string;
   value: string;
-  onChange: (value: string) => void;
+  onChange?: (value: string) => void;
   placeholder?: string;
   required?: boolean;
   maxLength?: number;
@@ -66,6 +66,7 @@ type FormFieldProps = {
   colSpan?: 'full' | 1 | 2 | 3 | 4 | 5 | 6;
   prefix?: string;
   autoComplete?: string;
+  disabled?: boolean;
 };
 
 export function FormField({
@@ -81,6 +82,7 @@ export function FormField({
   colSpan = 4,
   prefix,
   autoComplete,
+  disabled = false,
 }: FormFieldProps) {
   const colSpanClass = colSpan === 'full' ? 'col-span-full' : `sm:col-span-${colSpan}`;
 
@@ -88,16 +90,16 @@ export function FormField({
     <div className={colSpanClass}>
       <label
         htmlFor={id}
-        className="block text-sm/6 font-medium text-gray-900"
+        className="block text-sm/6 font-medium text-gray-900 dark:text-gray-100"
       >
         {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
+        {required && <span className="text-red-500 dark:text-red-400 ml-1">*</span>}
       </label>
       <div className="mt-2">
         {prefix
           ? (
-              <div className="flex items-center rounded-md bg-white pl-3 outline-1 -outline-offset-1 outline-gray-300 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-purple-600">
-                <div className="shrink-0 text-base text-gray-500 select-none sm:text-sm/6">
+              <div className="flex items-center rounded-md bg-white dark:bg-zinc-800 pl-3 outline-1 -outline-offset-1 outline-gray-300 dark:outline-zinc-600 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-purple-600 dark:focus-within:outline-purple-500">
+                <div className="shrink-0 text-base text-gray-500 dark:text-gray-400 select-none sm:text-sm/6">
                   {prefix}
                 </div>
                 <input
@@ -105,13 +107,14 @@ export function FormField({
                   name={id}
                   type={type}
                   value={value}
-                  onChange={e => onChange(e.target.value)}
+                  onChange={onChange ? e => onChange(e.target.value) : undefined}
                   placeholder={placeholder}
                   required={required}
                   maxLength={maxLength}
                   autoComplete={autoComplete}
+                  disabled={disabled}
                   className={classNames(
-                    'block min-w-0 grow bg-white py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm/6',
+                    'block min-w-0 grow bg-white dark:bg-zinc-800 py-1.5 pr-3 pl-1 text-base text-gray-900 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none sm:text-sm/6',
                     className || '',
                   )}
                 />
@@ -123,13 +126,13 @@ export function FormField({
                 name={id}
                 type={type}
                 value={value}
-                onChange={e => onChange(e.target.value)}
+                onChange={onChange ? e => onChange(e.target.value) : undefined}
                 placeholder={placeholder}
                 required={required}
                 maxLength={maxLength}
                 autoComplete={autoComplete}
                 className={classNames(
-                  'block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-purple-600 sm:text-sm/6',
+                  'block w-full rounded-md bg-white dark:bg-zinc-800 px-3 py-1.5 text-base text-gray-900 dark:text-gray-100 outline-1 -outline-offset-1 outline-gray-300 dark:outline-zinc-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-purple-600 dark:focus:outline-purple-500 sm:text-sm/6',
                   className || '',
                 )}
               />
@@ -167,10 +170,10 @@ export function FormTextarea({
     <div className="col-span-full">
       <label
         htmlFor={id}
-        className="block text-sm/6 font-medium text-gray-900"
+        className="block text-sm/6 font-medium text-gray-900 dark:text-gray-100"
       >
         {label}
-        {required && <span className="text-red-500 ml-1">*</span>}
+        {required && <span className="text-red-500 dark:text-red-400 ml-1">*</span>}
       </label>
       <div className="mt-2">
         <textarea
@@ -182,13 +185,13 @@ export function FormTextarea({
           placeholder={placeholder}
           required={required}
           className={classNames(
-            'block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-purple-600 sm:text-sm/6',
+            'block w-full rounded-md bg-white dark:bg-zinc-800 px-3 py-1.5 text-base text-gray-900 dark:text-gray-100 outline-1 -outline-offset-1 outline-gray-300 dark:outline-zinc-600 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-purple-600 dark:focus:outline-purple-500 sm:text-sm/6',
             className || '',
           )}
         />
       </div>
       {description && (
-        <p className="mt-3 text-sm/6 text-gray-600">{description}</p>
+        <p className="mt-3 text-sm/6 text-gray-600 dark:text-gray-400">{description}</p>
       )}
     </div>
   );
@@ -223,7 +226,7 @@ export function FormActions({
         <button
           type="button"
           onClick={onCancel}
-          className="text-sm/6 font-semibold text-gray-900"
+          className="text-sm/6 font-semibold text-gray-900 dark:text-gray-100"
         >
           {cancelText}
         </button>
@@ -232,7 +235,7 @@ export function FormActions({
         type={onSubmit ? 'button' : 'submit'}
         onClick={onSubmit}
         disabled={submitDisabled}
-        className="rounded-md bg-purple-600 px-4 py-2 text-sm font-semibold text-white shadow-xs hover:bg-purple-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-600 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="rounded-md bg-purple-600 dark:bg-purple-700 px-4 py-2 text-sm font-semibold text-white shadow-xs hover:bg-purple-500 dark:hover:bg-purple-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-600 dark:focus-visible:outline-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {submitText}
       </button>
