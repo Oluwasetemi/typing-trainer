@@ -309,7 +309,7 @@ function TournamentCompetitionWrapper({
         username: entry.username,
         wpm: entry.wpm,
         accuracy: entry.accuracy,
-        completedAt: entry.finishedAt || Date.now(),
+        completedAt: entry.finished || Date.now(),
         score: entry.wpm * (entry.accuracy / 100), // Calculate score
         placement: index + 1,
       }));
@@ -333,7 +333,7 @@ function TournamentCompetitionWrapper({
           username: entry.username,
           wpm: entry.wpm,
           accuracy: entry.accuracy,
-          completedAt: entry.finishedAt || Date.now(),
+          completedAt: entry.finished || Date.now(),
           score: entry.wpm * (entry.accuracy / 100),
           placement: index + 1,
         }));
