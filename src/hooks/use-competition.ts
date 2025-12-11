@@ -16,6 +16,7 @@ export type CompetitionState = {
   currentUserId: string | null;
 };
 
+// TODO: Use usePartySocket instead of PartySocket
 export function useCompetition(competitionId: string, userId: string) {
   const [competitionState, setCompetitionState] = useState<CompetitionState>({
     session: null,
@@ -43,13 +44,13 @@ export function useCompetition(competitionId: string, userId: string) {
 
     socketRef.current = socket;
 
-    socket.addEventListener('open', () => {
+    const handleServerOpening = () => {
       setCompetitionState(prev => ({
         ...prev,
         isConnected: true,
         connectionError: null,
       }));
-    });
+    };
 
     const handleServerMessage = (message: CompetitionServerMessage) => {
       switch (message.type) {
@@ -214,7 +215,7 @@ export function useCompetition(competitionId: string, userId: string) {
       }
     };
 
-    socket.addEventListener('message', (event) => {
+    const handleServerMessaging = (event: MessageEvent) => {
       try {
         const message = JSON.parse(event.data) as CompetitionServerMessage;
         handleServerMessage(message);
@@ -222,24 +223,35 @@ export function useCompetition(competitionId: string, userId: string) {
       catch (error) {
         console.error('Error parsing message:', error);
       }
-    });
+    };
 
-    socket.addEventListener('error', () => {
+    const handleServerError = () => {
       setCompetitionState(prev => ({
         ...prev,
         connectionError: 'Connection error',
         isConnected: false,
       }));
-    });
+    };
 
-    socket.addEventListener('close', () => {
+    const handleServerClosing = () => {
       setCompetitionState(prev => ({ ...prev, isConnected: false }));
-    });
+    };
+
+    socket.addEventListener('open', handleServerOpening);
+    socket.addEventListener('message', handleServerMessaging);
+    socket.addEventListener('error', handleServerError);
+    socket.addEventListener('close', handleServerClosing);
 
     return () => {
+      socket.removeEventListener('open', handleServerOpening);
+      socket.removeEventListener('message', handleServerMessaging);
+      socket.removeEventListener('error', handleServerError);
+      socket.removeEventListener('close', handleServerClosing);
+
+      socketRef.current = null;
       socket.close();
     };
-  }, [competitionId]);
+  }, [competitionId, competitionState.currentUserId]);
 
   const sendMessage = useCallback((message: CompetitionClientMessage) => {
     if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {

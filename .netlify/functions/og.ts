@@ -111,7 +111,7 @@ export async function handler(event: any) {
     };
   }
   catch (e: any) {
-    console.log(`Error: ${e.message}`);
+    console.error(`Error: ${e.message}`);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: 'Failed to generate the image' }),

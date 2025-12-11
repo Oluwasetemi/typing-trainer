@@ -1,4 +1,4 @@
-import type { IconType } from 'react-icons';
+import type { LucideIcon } from 'lucide-react';
 
 import { useNotification } from '@/hooks/use-notification';
 
@@ -40,17 +40,17 @@ export default function CompetitionWaitingRoom({
   };
 
   return (
-    <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
+    <div className="max-w-4xl mx-auto bg-white dark:bg-zinc-900 rounded-lg shadow-lg p-6">
       <header className="text-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">Waiting Room</h1>
-        <p className="text-gray-600">{session.name}</p>
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2">Waiting Room</h1>
+        <p className="text-gray-600 dark:text-gray-400">{session.name}</p>
       </header>
 
       {/* Competition Code */}
-      <div className="bg-gradient-to-r from-purple-50 to-blue-50 p-4 rounded-lg border border-purple-200 mb-6">
+      <div className="bg-linear-to-r from-purple-50 to-blue-50 dark:from-purple-950/20 dark:to-blue-950/20 p-4 rounded-lg border border-purple-200 dark:border-purple-800 mb-6">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-gray-600 mb-1">Competition Code:</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Competition Code:</p>
             <p className="text-2xl font-bold text-purple-700">{session.code}</p>
           </div>
           <button
@@ -128,7 +128,7 @@ export default function CompetitionWaitingRoom({
             type="button"
             onClick={onStart}
             disabled={!canStart}
-            className="flex-1 px-4 py-3 bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-lg hover:from-green-600 hover:to-teal-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all font-medium shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 px-4 py-3 bg-linear-to-r from-green-500 to-teal-500 text-white rounded-lg hover:from-green-600 hover:to-teal-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all font-medium shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {canStart ? '🏁 Start Competition' : 'Waiting for participants...'}
           </button>
@@ -155,7 +155,7 @@ type TimelineEvent = {
   id: string;
   type: 'joined' | 'ready' | 'host';
   participant: Participant;
-  icon: IconType;
+  icon: LucideIcon;
   iconBackground: string;
 };
 

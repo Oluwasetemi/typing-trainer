@@ -1,6 +1,6 @@
-import antfu from '@antfu/eslint-config';
+import setemiojo from '@setemiojo/eslint-config';
 
-// export default antfu({
+// export default setemiojo({
 //   formatters: true,
 //   react: true,
 // }, {
@@ -9,7 +9,7 @@ import antfu from '@antfu/eslint-config';
 //   },
 // })
 
-export default antfu(
+export default setemiojo(
   {
     type: 'app',
     typescript: true,
@@ -20,7 +20,7 @@ export default antfu(
       semi: true,
       quotes: 'single',
     },
-    ignores: ['src/routeTree.gen.ts', 'dist', '.claude', '.partykit'],
+    ignores: ['src/routeTree.gen.ts', 'dist', '.claude', '.partykit', 'TOURNAMENT_PLAN.md'],
   },
   {
     rules: {
@@ -37,11 +37,12 @@ export default antfu(
           tsconfigRootDir: '.',
         },
       ],
+      'style/quote-props': 'off',
       'unicorn/filename-case': [
         'error',
         {
           case: 'kebabCase',
-          ignore: ['README.md'],
+          ignore: ['README.md', 'TOURNAMENT_PLAN.md'],
         },
       ],
     },

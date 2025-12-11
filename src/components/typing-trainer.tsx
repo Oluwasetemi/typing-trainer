@@ -8,13 +8,13 @@ import TypingInput from './typing-input/typing-input';
 export default function TypingTrainer() {
   return (
     <TypingProvider>
-      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
+      <div className="max-w-4xl mx-auto bg-white dark:bg-zinc-900 rounded-lg shadow-lg p-6">
         {/* Header */}
         <header className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2">
             Typing Speed Trainer
           </h1>
-          <p className="text-gray-600">Test your typing speed and accuracy</p>
+          <p className="text-gray-600 dark:text-gray-400">Test your typing speed and accuracy</p>
         </header>
 
         {/* Progress Bar */}

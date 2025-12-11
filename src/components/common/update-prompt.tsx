@@ -1,33 +1,26 @@
-import { useEffect, useState } from 'react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 
 // Component for showing PWA update notifications
 export default function UpdatePrompt() {
-  const [showPrompt, setShowPrompt] = useState(false);
-
   const {
     offlineReady: [offlineReady, setOfflineReady],
     needRefresh: [needRefresh, setNeedRefresh],
     updateServiceWorker,
   } = useRegisterSW({
     onRegistered(r) {
-      console.log('SW Registered:', r);
+      console.warn('SW Registered:', r);
     },
     onRegisterError(error) {
-      console.log('SW registration error', error);
+      console.error('SW registration error', error);
     },
   });
 
-  useEffect(() => {
-    if (needRefresh || offlineReady) {
-      setShowPrompt(true);
-    }
-  }, [needRefresh, offlineReady]);
+  // Derive showPrompt directly from needRefresh and offlineReady
+  const showPrompt = needRefresh || offlineReady;
 
   const close = () => {
     setOfflineReady(false);
     setNeedRefresh(false);
-    setShowPrompt(false);
   };
 
   const handleUpdate = () => {
@@ -46,7 +39,7 @@ export default function UpdatePrompt() {
       aria-atomic="true"
     >
       <div className="flex items-start gap-3">
-        <div className="flex-shrink-0">
+        <div className="shrink-0">
           {needRefresh
             ? (
                 <svg
@@ -113,7 +106,7 @@ export default function UpdatePrompt() {
         <button
           type="button"
           onClick={close}
-          className="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
+          className="shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
           aria-label="Close"
         >
           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
