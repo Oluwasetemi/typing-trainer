@@ -6,7 +6,7 @@ export default function BehaviorSettings() {
 
   return (
     <div>
-      <h2 className="text-base font-semibold leading-7 text-gray-900">Typing Behavior</h2>
+      <h2 className="text-base font-semibold leading-7 text-gray-900 dark:text-settingsHeadingDark">Typing Behavior</h2>
       <p className="mt-1 text-sm leading-6 text-gray-500">
         Configure how typing interactions work.
       </p>

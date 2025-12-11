@@ -6,7 +6,7 @@ export default function AccessibilitySettings() {
 
   return (
     <div>
-      <h2 className="text-base font-semibold leading-7 text-gray-900">Accessibility</h2>
+      <h2 className="text-base font-semibold leading-7 text-gray-900 dark:text-settingsHeadingDark">Accessibility</h2>
       <p className="mt-1 text-sm leading-6 text-gray-500">
         Make the typing trainer more accessible and comfortable to use.
       </p>

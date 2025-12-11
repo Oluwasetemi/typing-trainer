@@ -19,3 +19,7 @@ export const sampleTexts = [
 export function getRandomText(): string {
   return sampleTexts[Math.floor(Math.random() * sampleTexts.length)];
 }
+
+export function capitalizeFirst(text: string): string {
+    return text.charAt(0).toUpperCase() + text.slice(1)
+}

@@ -14,7 +14,7 @@ export default function SettingsToggle({
   return (
     <div className="flex items-center justify-between py-4">
       <div className="flex-1">
-        <label className="text-sm font-medium text-gray-900">
+        <label className="text-sm font-medium text-gray-900 dark:text-settingsHeadingDark">
           {label}
         </label>
         {description && (
