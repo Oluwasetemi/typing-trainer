@@ -78,7 +78,7 @@ function CompetitionRoute() {
   const handleCreateCompetition = (_competitionName: string, userUsername: string) => {
     // Generate a unique competition code that will also be the room ID
     // Format: RACE-XXXX where XXXX is random alphanumeric
-    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // chars length = 32
     let code = 'RACE-';
     for (let i = 0; i < 4; i++) {
       code += chars.charAt(Math.floor(Math.random() * chars.length));

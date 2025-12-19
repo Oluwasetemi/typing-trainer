@@ -46,7 +46,7 @@ function SettingsRoute() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             <div className="flex flex-col items-center gap-y-6">
-              <Link to="/" className="text-2xl font-bold text-gray-900">
+              <Link to="/" className="text-2xl font-bold text-gray-900 dark:text-settingsHeadingDark">
                 ⌨️ Typing Trainer
               </Link>
             </div>

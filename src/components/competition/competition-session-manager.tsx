@@ -19,8 +19,6 @@ export default function CompetitionSessionManager({
 
   const handleCreateCompetition = () => {
     if (!createUsername.trim()) {
-      // eslint-disable-next-line no-alert
-      alert('Please enter your username');
       return;
     }
     const name = competitionName.trim() || 'Typing Competition';
@@ -29,8 +27,6 @@ export default function CompetitionSessionManager({
 
   const handleJoinCompetition = () => {
     if (!joinCode.trim() || !joinUsername.trim()) {
-      // eslint-disable-next-line no-alert
-      alert('Please enter both competition code and username');
       return;
     }
     onJoinCompetition(joinCode.trim(), joinUsername.trim());
@@ -84,7 +80,7 @@ export default function CompetitionSessionManager({
               </>
             )}
             onSubmit={handleCreateCompetition}
-            submitDisabled={!createUsername.trim()}
+            submitDisabled={!createUsername.trim() || createUsername.trim().length < 3}
             className="mt-0"
           />
         </div>
@@ -127,7 +123,7 @@ export default function CompetitionSessionManager({
               </>
             )}
             onSubmit={handleJoinCompetition}
-            submitDisabled={!joinCode.trim() || !joinUsername.trim()}
+            submitDisabled={!joinCode.trim() || !joinUsername.trim() || joinUsername.trim().length < 3}
             className="mt-0"
           />
         </div>

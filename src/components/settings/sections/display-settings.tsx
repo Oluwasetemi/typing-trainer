@@ -7,7 +7,7 @@ export default function DisplaySettings() {
 
   return (
     <div>
-      <h2 className="text-base font-semibold leading-7 text-gray-900">
+      <h2 className="text-base font-semibold leading-7 text-gray-900 dark:text-settingsHeadingDark">
         Display Settings
       </h2>
       <p className="mt-1 text-sm leading-6 text-gray-500">
@@ -17,7 +17,7 @@ export default function DisplaySettings() {
       <div className="mt-6 border-t border-gray-200 divide-y divide-gray-200">
         {/* Error Feedback */}
         <div className="space-y-4 py-6">
-          <h3 className="text-sm font-medium text-gray-900">Error Feedback</h3>
+          <h3 className="text-sm font-medium text-gray-900 dark:text-settingsHeadingDark">Error Feedback</h3>
 
           <SettingsToggle
             enabled={settings.errorFeedback.enabled}
@@ -50,7 +50,7 @@ export default function DisplaySettings() {
 
         {/* Text Display */}
         <div className="space-y-4 py-6">
-          <h3 className="text-sm font-medium text-gray-900">Text Display</h3>
+          <h3 className="text-sm font-medium text-gray-900 dark:text-settingsHeadingDark">Text Display</h3>
 
           <SettingsSelect
             value={settings.textDisplay.fontSize}

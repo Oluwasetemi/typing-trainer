@@ -15,7 +15,7 @@ export default function SettingsSelect({
 }: SettingsSelectProps) {
   return (
     <div className="py-4">
-      <label className="block text-sm font-medium text-gray-900 mb-2">
+      <label className="block text-sm font-medium text-gray-900 mb-2 dark:text-settingsHeadingDark">
         {label}
       </label>
       {description && (

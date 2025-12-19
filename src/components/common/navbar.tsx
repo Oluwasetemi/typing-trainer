@@ -1,6 +1,8 @@
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
 import { Link, useRouterState } from '@tanstack/react-router';
 
+import { capitalizeFirst } from '@/utils/texts';
+
 import { useTheme } from '../../context/theme-context';
 import { Icons } from '../../utils/icons';
 
@@ -74,7 +76,7 @@ export default function Navbar() {
               type="button"
               onClick={toggleMode}
               className="relative rounded-full p-2 text-gray-400 hover:bg-white/5 hover:text-white focus:outline-2 focus:outline-offset-2 focus:outline-purple-500 transition-colors"
-              title={`Theme: ${themeMode}`}
+              title={`Theme: ${capitalizeFirst(themeMode)}`}
             >
               <span className="sr-only">
                 Toggle theme (currently

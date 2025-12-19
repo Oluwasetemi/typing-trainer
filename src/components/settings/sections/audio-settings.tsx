@@ -7,7 +7,7 @@ export default function AudioSettings() {
 
   return (
     <div>
-      <h2 className="text-base font-semibold leading-7 text-gray-900">Audio Settings</h2>
+      <h2 className="text-base font-semibold leading-7 text-gray-900 dark:text-settingsHeadingDark">Audio Settings</h2>
       <p className="mt-1 text-sm leading-6 text-gray-500">
         Configure sound effects and audio feedback.
       </p>
@@ -35,7 +35,7 @@ export default function AudioSettings() {
           />
 
           <div className="py-4">
-            <label className="block text-sm font-medium text-gray-900 mb-2">
+            <label className="block text-sm font-medium text-gray-900 mb-2 dark:text-settingsHeadingDark">
               Volume
             </label>
             <input
