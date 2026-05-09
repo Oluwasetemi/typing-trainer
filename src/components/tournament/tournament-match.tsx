@@ -1,10 +1,9 @@
 import { ArrowLeft, Trophy } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import type { Match, MatchResult, Tournament } from '@/types/tournament.types';
 
 import Competition from '@/components/competition/competition';
-import { useCompetition } from '@/hooks/use-competition';
 import { getRoundName } from '@/utils/tournament-brackets';
 
 type TournamentMatchProps = {
@@ -156,16 +155,34 @@ export function TournamentMatch({
     );
   }
 
-  // If competition is active, show the typing competition with results monitoring
+  // If competition is active, show the typing competition
   if (showCompetition && match.competitionId) {
+    const handleCompetitionComplete = (leaderboard: any[]) => {
+      console.warn('[TournamentMatch] Competition completed, converting leaderboard to results:', leaderboard);
+
+      // Convert leaderboard to match results
+      const results: MatchResult[] = leaderboard.map((entry, index) => ({
+        userId: entry.userId,
+        username: entry.username,
+        wpm: entry.wpm,
+        accuracy: entry.accuracy,
+        completedAt: entry.finishTime || Date.now(),
+        score: entry.wpm * (entry.accuracy / 100),
+        placement: index + 1,
+      }));
+
+      console.warn('[TournamentMatch] Reporting results to tournament:', results);
+      onMatchComplete(match.id, results);
+    };
+
     return (
-      <TournamentCompetitionWrapper
+      <Competition
         competitionId={match.competitionId}
-        matchId={match.id}
         userId={userId}
         username={username}
-        onMatchComplete={onMatchComplete}
-        onBackToBracket={onBackToBracket}
+        tournamentMode
+        onLeave={onBackToBracket}
+        onCompetitionComplete={handleCompetitionComplete}
       />
     );
   }
@@ -267,89 +284,5 @@ export function TournamentMatch({
         </div>
       </div>
     </div>
-  );
-}
-
-// Wrapper component that monitors competition completion and reports results
-function TournamentCompetitionWrapper({
-  competitionId,
-  matchId,
-  userId,
-  username,
-  onMatchComplete,
-  onBackToBracket,
-}: {
-  competitionId: string;
-  matchId: string;
-  userId: string;
-  username: string;
-  onMatchComplete: (matchId: string, results: MatchResult[]) => void;
-  onBackToBracket: () => void;
-}) {
-  const { session, leaderboard } = useCompetition(competitionId, userId);
-  const hasReportedResults = useRef(false);
-
-  // Monitor for competition completion and report results
-  useEffect(() => {
-    console.warn('[TournamentCompetitionWrapper] State check:', {
-      sessionState: session?.state,
-      hasLeaderboard: !!leaderboard,
-      leaderboardLength: leaderboard?.length,
-      hasReported: hasReportedResults.current,
-      matchId,
-    });
-
-    if (session?.state === 'finished' && leaderboard && leaderboard.length > 0 && !hasReportedResults.current) {
-      console.warn('[TournamentCompetitionWrapper] Competition finished, reporting results IMMEDIATELY');
-      hasReportedResults.current = true;
-
-      // Convert leaderboard to match results
-      const results: MatchResult[] = leaderboard.map((entry, index) => ({
-        userId: entry.userId,
-        username: entry.username,
-        wpm: entry.wpm,
-        accuracy: entry.accuracy,
-        completedAt: entry.finished || Date.now(),
-        score: entry.wpm * (entry.accuracy / 100), // Calculate score
-        placement: index + 1,
-      }));
-
-      console.warn('[TournamentCompetitionWrapper] Reporting results:', results);
-
-      // Report immediately
-      onMatchComplete(matchId, results);
-
-      console.warn('[TournamentCompetitionWrapper] Results reported successfully');
-    }
-
-    // Cleanup: ensure results are reported even if component unmounts
-    return () => {
-      if (session?.state === 'finished' && leaderboard && leaderboard.length > 0 && !hasReportedResults.current) {
-        console.warn('[TournamentCompetitionWrapper] Component unmounting, reporting results in cleanup');
-        hasReportedResults.current = true;
-
-        const results: MatchResult[] = leaderboard.map((entry, index) => ({
-          userId: entry.userId,
-          username: entry.username,
-          wpm: entry.wpm,
-          accuracy: entry.accuracy,
-          completedAt: entry.finished || Date.now(),
-          score: entry.wpm * (entry.accuracy / 100),
-          placement: index + 1,
-        }));
-
-        onMatchComplete(matchId, results);
-      }
-    };
-  }, [session?.state, leaderboard, matchId, onMatchComplete]);
-
-  return (
-    <Competition
-      competitionId={competitionId}
-      userId={userId}
-      username={username}
-      tournamentMode
-      onLeave={onBackToBracket}
-    />
   );
 }

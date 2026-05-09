@@ -411,6 +411,19 @@ export default class TournamentServer implements Party.Server {
     round.state = 'in-progress';
     round.startTime = Date.now();
 
+    // For round-robin and swiss, participants without a match in this round
+    // received a BYE and automatically win that round slot.
+    const format = this.tournament.settings.format;
+    if (format === 'round-robin' || format === 'swiss-system') {
+      const participantsInRound = new Set(round.matches.flatMap(m => m.participants));
+      for (const participant of Object.values(this.tournament.participants)) {
+        if (!participant.isEliminated && !participantsInRound.has(participant.userId)) {
+          participant.wins++;
+          participant.matchesPlayed++;
+        }
+      }
+    }
+
     await this.persistTournament();
 
     this.room.broadcast(JSON.stringify({
@@ -535,6 +548,7 @@ export default class TournamentServer implements Party.Server {
       msg.results,
       this.tournament.settings.winCondition,
       this.tournament.settings.minAccuracy,
+      this.tournament.settings.targetWpm,
     );
     match.winnerId = winnerId;
 

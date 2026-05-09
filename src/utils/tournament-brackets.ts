@@ -279,10 +279,11 @@ export function determineMatchWinner(
   results: MatchResult[],
   winCondition: WinCondition,
   minAccuracy = 95,
+  targetWpm?: number,
 ): string {
   const scored = results.map(result => ({
     ...result,
-    calculatedScore: calculateScore(result, winCondition, minAccuracy),
+    calculatedScore: calculateScore(result, winCondition, minAccuracy, targetWpm),
   }));
 
   // Sort by calculated score (descending)
@@ -298,11 +299,12 @@ function calculateScore(
   result: MatchResult,
   condition: WinCondition,
   minAccuracy: number,
+  targetWpm?: number,
 ): number {
   switch (condition) {
     case 'fastest-completion':
       // Lower finish time = higher score
-      return result.finishTime ? 1000000 - result.finishTime : 0;
+      return result.finishTime ? 1_000_000 - result.finishTime : 0;
 
     case 'highest-wpm':
       // Must meet minimum accuracy threshold
@@ -312,9 +314,16 @@ function calculateScore(
       // WPM × Accuracy percentage
       return result.wpm * (result.accuracy / 100);
 
-    case 'race-to-target':
-      // Assumes target already met, score by time
-      return result.finishTime ? 1000000 - result.finishTime : 0;
+    case 'race-to-target': {
+      // Participants who met targetWpm always outrank those who didn't.
+      // Among qualifiers, fastest finish time wins. Non-qualifiers are
+      // ranked by WPM so the closer they got, the better their placement.
+      const metTarget = targetWpm === undefined || result.wpm >= targetWpm;
+      if (metTarget && result.finishTime) {
+        return 2_000_000 - result.finishTime; // guaranteed > any non-qualifier score
+      }
+      return result.wpm; // fallback: closer to target = higher rank
+    }
 
     default:
       return result.wpm;

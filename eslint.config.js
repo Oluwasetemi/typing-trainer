@@ -1,14 +1,5 @@
 import setemiojo from '@setemiojo/eslint-config';
 
-// export default setemiojo({
-//   formatters: true,
-//   react: true,
-// }, {
-//   rules: {
-//     'prefer-arrow-callback': 'off',
-//   },
-// })
-
 export default setemiojo(
   {
     type: 'app',

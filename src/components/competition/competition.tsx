@@ -12,6 +12,7 @@ type CompetitionProps = {
   username: string;
   onLeave: () => void;
   tournamentMode?: boolean;
+  onCompetitionComplete?: (leaderboard: any[]) => void;
 };
 
 export default function Competition({
@@ -20,6 +21,7 @@ export default function Competition({
   username,
   onLeave,
   tournamentMode = false,
+  onCompetitionComplete,
 }: CompetitionProps) {
   const {
     session,
@@ -35,6 +37,7 @@ export default function Competition({
   } = useCompetition(competitionId, userId);
 
   const hasJoinedRef = useRef(false);
+  const hasReportedResultsRef = useRef(false);
 
   // Auto-join when connected
   useEffect(() => {
@@ -43,6 +46,21 @@ export default function Competition({
       hasJoinedRef.current = true;
     }
   }, [isConnected, joinCompetition, username, competitionId]);
+
+  // Report results when competition finishes (for tournament mode)
+  useEffect(() => {
+    if (
+      session?.state === 'finished'
+      && leaderboard
+      && leaderboard.length > 0
+      && !hasReportedResultsRef.current
+      && onCompetitionComplete
+    ) {
+      console.warn('[Competition] Competition finished, reporting results:', leaderboard);
+      hasReportedResultsRef.current = true;
+      onCompetitionComplete(leaderboard);
+    }
+  }, [session?.state, leaderboard, onCompetitionComplete]);
 
   // Derive countdown state from session state
   const showCountdown = session?.state === 'countdown';
