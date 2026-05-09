@@ -24,7 +24,7 @@ export const Route = createFileRoute('/session')({
     const { sessionId } = match.search;
     if (!sessionId) {
       return {
-        title: 'Real-time Typing Sessions',
+        title: 'Sessions — KeyRush',
         meta: [
           {
             name: 'description',
@@ -33,9 +33,8 @@ export const Route = createFileRoute('/session')({
         ],
       };
     }
-
     return {
-      title: `Typing Session - ${sessionId}`,
+      title: `Session ${sessionId} — KeyRush`,
       meta: [
         {
           name: 'description',
@@ -43,11 +42,11 @@ export const Route = createFileRoute('/session')({
         },
         {
           property: 'og:title',
-          content: `Typing Session - ${sessionId}`,
+          content: `Session ${sessionId} — KeyRush`,
         },
         {
           property: 'og:description',
-          content: 'Real-time typing practice session. Join and start typing to improve your speed and accuracy.',
+          content: 'Real-time typing practice session. Join and start typing.',
         },
         {
           property: 'og:type',
@@ -58,30 +57,20 @@ export const Route = createFileRoute('/session')({
           content: generateSessionOGImageUrl(sessionId),
         },
         {
-          property: 'og:logo',
-          content: 'https://deploy-preview-3--realtime-typing-trainer.netlify.app/favicon.ico',
-        },
-        {
           name: 'twitter:card',
           content: 'summary_large_image',
         },
         {
           name: 'twitter:title',
-          content: `Typing Session - ${sessionId}`,
+          content: `Session ${sessionId} — KeyRush`,
         },
         {
           name: 'twitter:description',
-          content: 'Real-time typing practice session. Join and start typing to improve your speed and accuracy.',
+          content: 'Real-time typing practice session.',
         },
         {
           name: 'twitter:image',
           content: generateSessionOGImageUrl(sessionId),
-        },
-      ],
-      links: [
-        {
-          rel: 'canonical',
-          href: `https://deploy-preview-3--realtime-typing-trainer.netlify.app/session?sessionId=${sessionId}`,
         },
       ],
     };
@@ -115,11 +104,37 @@ function SessionPage() {
     }
   };
 
-  // Show session manager if no sessionId
-  if (!sessionId) {
-    return <SessionManager onStartSession={handleStartSession} />;
-  }
+  return (
+    <div className="min-h-[calc(100vh-56px)] bg-gray-50 dark:bg-zinc-950">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="pt-8 pb-6 border-b border-gray-100 dark:border-zinc-800 mb-8">
+          <div className="flex items-center gap-4 flex-wrap">
+            <h1
+              className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white"
+              style={{ fontFamily: 'var(--font-display)' }}
+            >
+              Sessions
+            </h1>
+            {sessionId && (
+              <span
+                className="inline-flex items-center px-3 py-1 rounded-lg bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 text-sm font-semibold"
+                style={{ fontFamily: 'var(--font-mono)' }}
+              >
+                {sessionId}
+              </span>
+            )}
+          </div>
+          <p className="text-gray-500 dark:text-gray-400 mt-1 text-sm">
+            {sessionId
+              ? (sessionName ?? 'Live session in progress')
+              : 'Create or join a shared typing session.'}
+          </p>
+        </div>
 
-  // Show typing trainer if sessionId exists
-  return <RealtimeTypingTrainer sessionId={sessionId} userId={generatedUserId} sessionName={sessionName} />;
+        {!sessionId
+          ? <SessionManager onStartSession={handleStartSession} />
+          : <RealtimeTypingTrainer sessionId={sessionId} userId={generatedUserId} sessionName={sessionName} />}
+      </div>
+    </div>
+  );
 }

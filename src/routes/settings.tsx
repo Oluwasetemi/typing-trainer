@@ -1,5 +1,14 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
-import { Accessibility, BarChart3, KeyboardIcon, Monitor, Music, Settings as SettingsIcon, Trophy, Users } from 'lucide-react';
+import { createFileRoute } from '@tanstack/react-router';
+import {
+  Accessibility,
+  BarChart3,
+  KeyboardIcon,
+  Monitor,
+  Music,
+  Settings as SettingsIcon,
+  Trophy,
+  Users,
+} from 'lucide-react';
 import { useState } from 'react';
 
 import SettingsPage from '../components/settings/settings-page';
@@ -7,23 +16,16 @@ import SettingsPage from '../components/settings/settings-page';
 export const Route = createFileRoute('/settings')({
   ssr: true,
   head: () => ({
-    title: 'Settings - Typing Trainer',
+    title: 'Settings — KeyRush',
     meta: [
       {
         name: 'description',
-        content:
-          'Configure your typing trainer preferences including display options, keyboard settings, and more.',
+        content: 'Configure your KeyRush preferences: display, keyboard, audio, accessibility, and more.',
       },
     ],
   }),
   component: SettingsRoute,
 });
-
-// const navigation = [
-//   { name: 'Solo', href: '/solo' },
-//   { name: 'Session', href: '/session' },
-//   { name: 'Competition', href: '/competition' },
-// ];
 
 const secondaryNavigation = [
   { name: 'Display', icon: Monitor, section: 'display' },
@@ -40,79 +42,61 @@ function SettingsRoute() {
   const [currentSection, setCurrentSection] = useState('display');
 
   return (
-    <>
-      {/* Header */}
-      <header className="border-b border-gray-200">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between">
-            <div className="flex flex-col items-center gap-y-6">
-              <Link to="/" className="text-2xl font-bold text-gray-900">
-                ⌨️ Typing Trainer
-              </Link>
-            </div>
-            {/* <nav className="hidden md:flex md:gap-x-8">
-              {navigation.map((item) => (
-                <Link
-                  key={item.name}
-                  to={item.href}
-                  className="text-sm font-medium text-gray-700 hover:text-gray-900"
-                >
-                  {item.name}
-                </Link>
-              ))}
-              <Link
-                to="/settings"
-                className="text-sm font-medium text-indigo-600"
-              >
-                Settings
-              </Link>
-            </nav> */}
-          </div>
+    <div className="min-h-[calc(100vh-56px)] bg-gray-50 dark:bg-zinc-950">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Page header */}
+        <div className="pt-8 pb-6 border-b border-gray-100 dark:border-zinc-800 mb-8">
+          <h1
+            className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white"
+            style={{ fontFamily: 'var(--font-display)' }}
+          >
+            Settings
+          </h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-1 text-sm">
+            Manage your typing preferences and display options.
+          </p>
         </div>
-      </header>
 
-      <div className="mx-auto max-w-7xl lg:flex lg:gap-x-16 lg:px-8">
-        <h1 className="sr-only">Settings</h1>
-
-        {/* Sidebar Navigation */}
-        <aside className="flex overflow-x-auto border-b border-gray-900/5 py-4 lg:block lg:w-64 lg:flex-none lg:border-0 lg:py-8">
-          <nav className="flex-none px-4 sm:px-6 lg:px-0">
-            <ul
-              role="list"
-              className="flex gap-x-3 gap-y-1 whitespace-nowrap lg:flex-col"
+        <div className="lg:flex lg:gap-x-10 pb-16">
+          {/* Sticky sidebar */}
+          <aside className="lg:w-52 lg:flex-none mb-8 lg:mb-0">
+            <nav
+              className="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-x-visible pb-2 lg:pb-0 lg:sticky"
+              style={{ top: 'calc(56px + 2rem)' }}
             >
-              {secondaryNavigation.map(item => (
-                <li key={item.name}>
+              {secondaryNavigation.map((item) => {
+                const Icon = item.icon;
+                const isActive = currentSection === item.section;
+                return (
                   <button
+                    key={item.name}
                     type="button"
                     onClick={() => setCurrentSection(item.section)}
-                    className={`group flex w-full gap-x-3 rounded-md py-2 pl-2 pr-3 text-sm font-semibold leading-6 ${
-                      currentSection === item.section
-                        ? 'bg-gray-50 text-indigo-600'
-                        : 'text-gray-700 hover:bg-gray-50 hover:text-indigo-600'
+                    className={`flex items-center gap-2.5 whitespace-nowrap w-full rounded-xl px-3 py-2.5 text-sm font-medium transition-colors text-left ${
+                      isActive
+                        ? 'bg-white dark:bg-zinc-900 text-violet-600 dark:text-violet-400 shadow-sm border border-gray-100 dark:border-zinc-800'
+                        : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-white dark:hover:bg-zinc-900'
                     }`}
                   >
-                    <item.icon
-                      className={`h-6 w-6 shrink-0 ${
-                        currentSection === item.section
-                          ? 'text-indigo-600'
-                          : 'text-gray-400 group-hover:text-indigo-600'
-                      }`}
+                    <Icon
+                      className={`size-4 flex-shrink-0 ${isActive ? 'text-violet-500' : 'text-gray-400 dark:text-gray-500'}`}
                       aria-hidden="true"
                     />
                     {item.name}
                   </button>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        </aside>
+                );
+              })}
+            </nav>
+          </aside>
 
-        {/* Main Content */}
-        <main className="px-4 py-8 sm:px-6 lg:flex-auto lg:px-0">
-          <SettingsPage currentSection={currentSection} />
-        </main>
+          {/* Settings content card */}
+          <div className="flex-1 min-w-0">
+            <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-gray-100 dark:border-zinc-800 p-6 sm:p-8">
+              <SettingsPage currentSection={currentSection} />
+            </div>
+          </div>
+        </div>
       </div>
-    </>
+    </div>
   );
 }

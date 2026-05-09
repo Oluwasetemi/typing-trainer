@@ -28,41 +28,27 @@ function CompetitionRoute() {
   const { competitionId, username, userId: urlUserId } = Route.useSearch();
   const { notification, hideNotification, showSuccess } = useNotification();
 
-  // Use userId from URL if present, otherwise try sessionStorage, otherwise generate new
-  // This allows per-tab userId while persisting across refreshes
   const [userId] = useState(() => {
     if (urlUserId) {
-      // URL has userId - use it and store in sessionStorage
       sessionStorage.setItem('typing-competition-userId', urlUserId);
       return urlUserId;
     }
-
-    // Check sessionStorage for this tab's userId
     const stored = sessionStorage.getItem('typing-competition-userId');
-
-    if (stored && competitionId) {
-      // We have a stored userId for this tab - use it
-      return stored;
-    }
-
-    // Generate new userId
+    if (stored && competitionId) return stored;
     const newId = `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     sessionStorage.setItem('typing-competition-userId', newId);
     return newId;
   });
 
-  // Track if we've already updated the URL to prevent infinite loops
   const hasUpdatedUrl = useRef(false);
 
-  // IMPORTANT: If we're in a competition but userId is not in URL, add it
-  // This ensures the userId persists across page refreshes
   useEffect(() => {
     if (competitionId && username && !urlUserId && !hasUpdatedUrl.current) {
       hasUpdatedUrl.current = true;
       navigate({
         to: '/competition',
         search: { competitionId, username, userId },
-        replace: true, // Use replace to not add to history
+        replace: true,
       });
     }
   }, [competitionId, username, urlUserId, userId, navigate]);
@@ -70,50 +56,26 @@ function CompetitionRoute() {
   const copyClipboard = (code: string) => {
     navigator.clipboard.writeText(code).then(() => {
       showSuccess('Competition code copied!', `Code ${code} has been copied to clipboard. Share it with friends!`);
-    }).catch(() => {
-      // Silently fail if clipboard access is denied
-    });
+    }).catch(() => {});
   };
 
   const handleCreateCompetition = (_competitionName: string, userUsername: string) => {
-    // Generate a unique competition code that will also be the room ID
-    // Format: RACE-XXXX where XXXX is random alphanumeric
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     let code = 'RACE-';
     for (let i = 0; i < 4; i++) {
       code += chars.charAt(Math.floor(Math.random() * chars.length));
     }
-
-    // Auto-copy the competition code to clipboard
     copyClipboard(code);
-
-    // Use the existing userId from state, don't generate a new one
-    // This ensures the same user maintains their identity across navigation
-    const currentUserId = userId;
-
     navigate({
       to: '/competition',
-      search: {
-        competitionId: code,
-        username: userUsername,
-        userId: currentUserId,
-      },
+      search: { competitionId: code, username: userUsername, userId },
     });
   };
 
   const handleJoinCompetition = (competitionCode: string, joinUsername: string) => {
-    // Use the existing userId from state, don't generate a new one
-    // This ensures the same user maintains their identity across navigation
-    const currentUserId = userId;
-
-    // The competition code IS the competition ID/room ID
     navigate({
       to: '/competition',
-      search: {
-        competitionId: competitionCode.toUpperCase(),
-        username: joinUsername,
-        userId: currentUserId,
-      },
+      search: { competitionId: competitionCode.toUpperCase(), username: joinUsername, userId },
     });
   };
 
@@ -121,14 +83,49 @@ function CompetitionRoute() {
     navigate({ to: '/competition' });
   };
 
-  // Show session manager if no competition ID
-  if (!competitionId || !username) {
-    return (
-      <div className="mx-auto" style={{ maxWidth: '900px' }}>
-        <CompetitionSessionManager
-          onCreateCompetition={handleCreateCompetition}
-          onJoinCompetition={handleJoinCompetition}
-        />
+  return (
+    <div className="min-h-[calc(100vh-56px)] bg-gray-50 dark:bg-zinc-950">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="pt-8 pb-6 border-b border-gray-100 dark:border-zinc-800 mb-8">
+          <div className="flex items-center gap-4 flex-wrap">
+            <h1
+              className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white"
+              style={{ fontFamily: 'var(--font-display)' }}
+            >
+              Live Competitions
+            </h1>
+            {competitionId && (
+              <span
+                className="inline-flex items-center px-3 py-1 rounded-lg bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 text-sm font-semibold"
+                style={{ fontFamily: 'var(--font-mono)' }}
+              >
+                {competitionId}
+              </span>
+            )}
+          </div>
+          <p className="text-gray-500 dark:text-gray-400 mt-1 text-sm">
+            {competitionId && username
+              ? `Racing as ${username}`
+              : 'Create a room or join an existing competition.'}
+          </p>
+        </div>
+
+        {!competitionId || !username
+          ? (
+              <CompetitionSessionManager
+                onCreateCompetition={handleCreateCompetition}
+                onJoinCompetition={handleJoinCompetition}
+              />
+            )
+          : (
+              <Competition
+                competitionId={competitionId}
+                userId={userId}
+                username={username}
+                onLeave={handleLeave}
+              />
+            )}
+
         <Notification
           show={notification.show}
           title={notification.title}
@@ -137,25 +134,6 @@ function CompetitionRoute() {
           onClose={hideNotification}
         />
       </div>
-    );
-  }
-
-  // Show competition view
-  return (
-    <div className="mx-auto" style={{ maxWidth: '900px' }}>
-      <Competition
-        competitionId={competitionId}
-        userId={userId}
-        username={username}
-        onLeave={handleLeave}
-      />
-      <Notification
-        show={notification.show}
-        title={notification.title}
-        message={notification.message}
-        type={notification.type}
-        onClose={hideNotification}
-      />
     </div>
   );
 }

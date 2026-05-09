@@ -1,7 +1,10 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useEffect } from 'react';
 
-import SessionModeSelector from '../components/session-manager/session-mode-selector';
+import FooterCta from '../components/landing/footer-cta';
+import FeaturesGrid from '../components/landing/features-grid';
+import Hero from '../components/landing/hero';
+import StatsBar from '../components/landing/stats-bar';
 
 type SearchParams = {
   session?: string;
@@ -23,38 +26,24 @@ function HomePage() {
   const navigate = useNavigate();
   const { session, role } = Route.useSearch();
 
-  // Handle session sharing URL
+  // Preserve deep-link handling for shared session/spectator URLs
   useEffect(() => {
     if (session && role) {
       if (role === 'spectator') {
-        navigate({
-          to: '/spectator',
-          search: { sessionId: session },
-        });
+        navigate({ to: '/spectator', search: { sessionId: session } });
       }
       else if (role === 'typist') {
-        navigate({
-          to: '/session',
-          search: { sessionId: session },
-        });
+        navigate({ to: '/session', search: { sessionId: session } });
       }
     }
   }, [session, role, navigate]);
 
-  const handleSelectMode = (mode: 'session' | 'solo' | 'competition' | 'tournament') => {
-    if (mode === 'solo') {
-      navigate({ to: '/solo' });
-    }
-    else if (mode === 'competition') {
-      navigate({ to: '/competition' });
-    }
-    else if (mode === 'tournament') {
-      navigate({ to: '/tournament' });
-    }
-    else if (mode === 'session') {
-      navigate({ to: '/session' });
-    }
-  };
-
-  return <SessionModeSelector onSelectMode={handleSelectMode} />;
+  return (
+    <>
+      <Hero />
+      <FeaturesGrid />
+      <StatsBar />
+      <FooterCta />
+    </>
+  );
 }

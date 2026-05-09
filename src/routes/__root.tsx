@@ -12,26 +12,26 @@ import { generateDefaultOGImageUrl } from '../utils/og-image';
 
 export const Route = createRootRoute({
   head: () => ({
-    title: `Real-time Typing Trainer`,
+    title: 'KeyRush — Type faster. Win every room.',
     meta: [
       {
         name: 'description',
         content:
-          'Practice typing with real-time collaboration. Create sessions, join as spectator, or practice solo.',
+          'Real-time multiplayer typing competitions, solo practice, and tournament brackets — built for professionals who move fast.',
       },
       {
         name: 'keywords',
         content:
-          'typing, practice, real-time, collaboration, typing trainer, wpm, accuracy',
+          'typing, practice, real-time, competition, typing trainer, wpm, accuracy, tournament, keyrush',
       },
       {
         property: 'og:title',
-        content: 'Real-time Typing Trainer',
+        content: 'KeyRush — Type faster. Win every room.',
       },
       {
         property: 'og:description',
         content:
-          'Practice typing with real-time collaboration. Create sessions, join as spectator, or practice solo.',
+          'Real-time multiplayer typing competitions, solo practice, and tournament brackets — built for professionals who move fast.',
       },
       {
         property: 'og:type',
@@ -57,12 +57,12 @@ export const Route = createRootRoute({
       },
       {
         name: 'twitter:title',
-        content: 'Real-time Typing Trainer',
+        content: 'KeyRush — Type faster. Win every room.',
       },
       {
         name: 'twitter:description',
         content:
-          'Practice typing with real-time collaboration. Create sessions, join as spectator, or practice solo.',
+          'Real-time multiplayer typing competitions, solo practice, and tournament brackets — built for professionals who move fast.',
       },
       {
         name: 'twitter:image',
@@ -86,7 +86,7 @@ export const Route = createRootRoute({
         <div className="min-h-screen bg-gray-50 dark:bg-zinc-950">
           <OfflineIndicator />
           <Navbar />
-          <main className="flex items-center justify-center p-4">
+          <main>
             <Outlet />
           </main>
           <UpdatePrompt />

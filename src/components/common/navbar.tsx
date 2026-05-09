@@ -1,122 +1,116 @@
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react';
 import { Link, useRouterState } from '@tanstack/react-router';
+import { Menu, Settings, X } from 'lucide-react';
 
 import { useTheme } from '../../context/theme-context';
 import { Icons } from '../../utils/icons';
 
 const navigation = [
-  { name: 'Home', href: '/' },
-  { name: 'Solo Practice', href: '/solo' },
-  { name: 'Competition', href: '/competition' },
-  { name: 'Session', href: '/session' },
+  { name: 'Solo', href: '/solo' },
+  { name: 'Compete', href: '/competition' },
+  { name: 'Sessions', href: '/session' },
+  { name: 'Tournament', href: '/tournament' },
 ];
-
-function classNames(...classes: (string | boolean | undefined)[]) {
-  return classes.filter(Boolean).join(' ');
-}
 
 export default function Navbar() {
   const router = useRouterState();
   const currentPath = router.location.pathname;
   const { themeMode, toggleMode } = useTheme();
 
+  const isActive = (href: string) =>
+    currentPath === href || (href !== '/' && currentPath.startsWith(href));
+
   return (
     <Disclosure
       as="nav"
-      className="relative bg-gray-800 dark:bg-gray-800/50 dark:after:pointer-events-none dark:after:absolute dark:after:inset-x-0 dark:after:bottom-0 dark:after:h-px dark:after:bg-white/10"
+      className="sticky top-0 z-50 bg-zinc-950/85 backdrop-blur-md border-b border-zinc-800/80"
     >
-      <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
-        <div className="relative flex h-16 items-center justify-between">
-          <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
-            {/* Mobile menu button */}
-            <DisclosureButton className="group relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-white/5 hover:text-white focus:outline-2 focus:-outline-offset-1 focus:outline-purple-500">
-              <span className="absolute -inset-0.5" />
-              <span className="sr-only">Open main menu</span>
-              <Icons.Menu aria-hidden="true" className="block size-6 group-data-open:hidden" />
-              <Icons.CloseMenu aria-hidden="true" className="hidden size-6 group-data-open:block" />
-            </DisclosureButton>
-          </div>
-          <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-            <div className="flex shrink-0 items-center">
-              <Link to="/">
-                <img
-                  alt="Typing Trainer Logo"
-                  src="/icon.svg"
-                  className="h-8 w-auto"
-                />
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex h-14 items-center justify-between">
+
+          {/* Wordmark */}
+          <Link
+            to="/"
+            className="flex-shrink-0 font-bold text-lg text-white tracking-tight hover:opacity-90 transition-opacity"
+            style={{ fontFamily: 'var(--font-display)' }}
+          >
+            ⚡ KeyRush
+          </Link>
+
+          {/* Desktop nav */}
+          <div className="hidden sm:flex sm:items-center sm:gap-0.5">
+            {navigation.map(item => (
+              <Link
+                key={item.name}
+                to={item.href}
+                aria-current={isActive(item.href) ? 'page' : undefined}
+                className={
+                  isActive(item.href)
+                    ? 'relative px-3.5 py-1.5 text-sm font-semibold text-white rounded-lg bg-zinc-800'
+                    : 'px-3.5 py-1.5 text-sm font-medium text-gray-400 hover:text-white hover:bg-zinc-800/60 rounded-lg transition-colors duration-150'
+                }
+              >
+                {item.name}
+                {isActive(item.href) && (
+                  <span className="absolute inset-x-3 -bottom-[1px] h-0.5 rounded-full bg-violet-500" />
+                )}
               </Link>
-            </div>
-            <div className="hidden sm:ml-6 sm:block">
-              <div className="flex space-x-4">
-                {navigation.map((item) => {
-                  const isCurrent = currentPath === item.href;
-                  return (
-                    <Link
-                      key={item.name}
-                      to={item.href}
-                      aria-current={isCurrent ? 'page' : undefined}
-                      className={classNames(
-                        isCurrent
-                          ? 'bg-gray-900 text-white dark:bg-gray-950/50'
-                          : 'text-gray-300 hover:bg-white/5 hover:text-white',
-                        'rounded-md px-3 py-2 text-sm font-medium',
-                      )}
-                    >
-                      {item.name}
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
+            ))}
           </div>
-          <div className="absolute inset-y-0 right-0 flex items-center gap-2 pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+
+          {/* Right controls */}
+          <div className="flex items-center gap-1">
             <button
               type="button"
               onClick={toggleMode}
-              className="relative rounded-full p-2 text-gray-400 hover:bg-white/5 hover:text-white focus:outline-2 focus:outline-offset-2 focus:outline-purple-500 transition-colors"
               title={`Theme: ${themeMode}`}
+              className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-zinc-800/60 transition-colors"
             >
-              <span className="sr-only">
-                Toggle theme (currently
-                {themeMode}
-                )
-              </span>
-              {themeMode === 'light' && <Icons.Sun aria-hidden="true" className="size-5" />}
-              {themeMode === 'dark' && <Icons.Moon aria-hidden="true" className="size-5" />}
-              {themeMode === 'auto' && <Icons.Sparkles aria-hidden="true" className="size-5" />}
+              <span className="sr-only">Toggle theme</span>
+              {themeMode === 'light' && <Icons.Sun className="size-[18px]" aria-hidden="true" />}
+              {themeMode === 'dark' && <Icons.Moon className="size-[18px]" aria-hidden="true" />}
+              {themeMode === 'auto' && <Icons.Sparkles className="size-[18px]" aria-hidden="true" />}
             </button>
             <Link
               to="/settings"
-              className="relative rounded-full p-2 text-gray-400 hover:bg-white/5 hover:text-white focus:outline-2 focus:outline-offset-2 focus:outline-purple-500 transition-colors"
+              className={`p-2 rounded-lg transition-colors ${
+                isActive('/settings')
+                  ? 'text-white bg-zinc-800'
+                  : 'text-gray-400 hover:text-white hover:bg-zinc-800/60'
+              }`}
             >
               <span className="sr-only">Settings</span>
-              <Icons.Settings aria-hidden="true" className="size-5" />
+              <Settings className="size-[18px]" aria-hidden="true" />
             </Link>
+
+            {/* Mobile hamburger */}
+            <DisclosureButton className="sm:hidden p-2 rounded-lg text-gray-400 hover:text-white hover:bg-zinc-800/60 transition-colors">
+              <span className="sr-only">Open menu</span>
+              <Menu className="size-[18px] group-data-open:hidden" aria-hidden="true" />
+              <X className="size-[18px] hidden group-data-open:block" aria-hidden="true" />
+            </DisclosureButton>
           </div>
         </div>
       </div>
 
-      <DisclosurePanel className="sm:hidden">
-        <div className="space-y-1 px-2 pt-2 pb-3">
-          {navigation.map((item) => {
-            const isCurrent = currentPath === item.href;
-            return (
-              <DisclosureButton
-                key={item.name}
-                as={Link}
-                to={item.href}
-                aria-current={isCurrent ? 'page' : undefined}
-                className={classNames(
-                  isCurrent
-                    ? 'bg-gray-900 text-white dark:bg-gray-950/50'
-                    : 'text-gray-300 hover:bg-white/5 hover:text-white',
-                  'block rounded-md px-3 py-2 text-base font-medium',
-                )}
-              >
-                {item.name}
-              </DisclosureButton>
-            );
-          })}
+      {/* Mobile menu */}
+      <DisclosurePanel className="sm:hidden border-t border-zinc-800/80 bg-zinc-950">
+        <div className="px-4 py-3 space-y-0.5">
+          {navigation.map(item => (
+            <DisclosureButton
+              key={item.name}
+              as={Link}
+              to={item.href}
+              aria-current={isActive(item.href) ? 'page' : undefined}
+              className={
+                isActive(item.href)
+                  ? 'flex px-3 py-2.5 rounded-lg text-sm font-semibold text-white bg-zinc-800'
+                  : 'flex px-3 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-white hover:bg-zinc-800/60 transition-colors'
+              }
+            >
+              {item.name}
+            </DisclosureButton>
+          ))}
         </div>
       </DisclosurePanel>
     </Disclosure>
